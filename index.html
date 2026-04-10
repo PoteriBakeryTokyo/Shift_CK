@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>シフト管理</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
+  :root {
+    --bg:#F5F3EE; --surface:#FFFFFF; --surface2:#F0EDE8;
+    --border:#DDD9D2; --border2:#C8C4BC;
+    --text:#1A1814; --text2:#6B6760; --text3:#A8A49E;
+    --accent:#2D5016; --accent-light:#EBF0E4;
+    --sat:#1A4A7A; --sat-bg:#EBF1F8;
+    --sun:#7A1A1A; --sun-bg:#F8EBEB;
+    --danger:#C0392B;
+    --mono:'DM Mono',monospace; --sans:'Noto Sans JP',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased;}
+
+  /* LOGIN */
+  #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px 32px;width:100%;max-width:360px;}
+  .login-logo{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:32px;text-align:center;}
+  .login-title{font-size:22px;font-weight:700;margin-bottom:6px;text-align:center;}
+  .login-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:28px;}
+  .login-label{font-size:11px;font-weight:500;letter-spacing:.05em;color:var(--text2);margin-bottom:8px;}
+  .name-select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:14px;background:var(--surface);color:var(--text);outline:none;margin-bottom:16px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A8A49E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+  .name-select:focus{border-color:var(--accent);}
+  .pw-wrap{margin-bottom:16px;display:none;}
+  .pw-wrap input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:14px;background:var(--surface);color:var(--text);outline:none;}
+  .pw-wrap input:focus{border-color:var(--accent);}
+  .login-err{font-size:12px;color:var(--danger);margin-bottom:12px;display:none;text-align:center;}
+  .login-loading{font-size:12px;color:var(--text3);text-align:center;margin-bottom:12px;}
+  .btn-primary{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:14px;font-weight:500;cursor:pointer;transition:opacity .15s;}
+  .btn-primary:hover{opacity:.88;}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* APP HEADER */
+  #app-screen{display:none;min-height:100vh;}
+  .app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+  .app-header-name{font-size:15px;font-weight:700;}
+  .app-header-period{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:1px;}
+  .logout-btn{font-size:12px;color:var(--text3);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;font-family:var(--sans);}
+  .logout-btn:hover{color:var(--text2);border-color:var(--border2);}
+
+  /* TABS */
+  .tab-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);}
+  .tab-btn{flex:1;padding:12px 8px;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text2);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* CONFIRMED SHIFT TABLE */
+  .confirmed-wrap{padding:16px;max-width:900px;margin:0 auto;}
+  .confirmed-meta{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;text-align:right;}
+  .table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:10px;}
+  .cs-table{border-collapse:collapse;font-size:11px;min-width:100%;}
+  .cs-table th{background:#1A1814;color:#fff;padding:7px 7px;text-align:center;font-weight:500;white-space:nowrap;}
+  .cs-table th.th-date{text-align:left;min-width:72px;position:sticky;left:0;z-index:2;background:#1A1814;}
+  .cs-table td{padding:5px 6px;text-align:center;border-bottom:.5px solid var(--border);white-space:nowrap;font-family:var(--mono);font-size:11px;}
+  .cs-table td.td-date{text-align:left;font-family:var(--sans);font-weight:500;font-size:12px;position:sticky;left:0;background:var(--surface);z-index:1;padding:5px 8px;}
+  .cs-table tr.sat td{background:var(--sat-bg);}
+  .cs-table tr.sat td.td-date{background:var(--sat-bg);color:var(--sat);}
+  .cs-table tr.sun td{background:var(--sun-bg);}
+  .cs-table tr.sun td.td-date{background:var(--sun-bg);color:var(--sun);}
+  .cs-table td.has-val{color:var(--accent);font-weight:500;line-height:1.6;}
+  .cs-table td.no-val{color:var(--text3);}
+  /* editable cells (admin) */
+  .cs-table td.editable{padding:2px 3px;}
+  .cs-table td.editable input{width:44px;height:26px;font-family:var(--mono);font-size:11px;text-align:center;border:1px solid var(--border2);border-radius:4px;background:var(--surface);color:var(--accent);font-weight:500;padding:0 2px;}
+  .cs-table td.editable input:focus{border-color:var(--accent);outline:none;}
+  .cs-table td.editable input.empty-val{color:var(--text3);}
+  .loading-msg{padding:32px;text-align:center;font-size:13px;color:var(--text3);}
+  .unpublished-msg{padding:40px 16px;text-align:center;}
+  .unpublished-msg p{font-size:14px;color:var(--text2);margin-bottom:6px;}
+  .unpublished-msg small{font-size:12px;color:var(--text3);}
+
+  /* HOPE SHIFT */
+  .content{padding:16px;max-width:600px;margin:0 auto;}
+  .shift-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+  .day-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:10px;}
+  .day-row.has-shift{border-left:3px solid var(--accent);}
+  .day-row.sat{border-left:3px solid var(--sat);}
+  .day-row.sun{border-left:3px solid var(--sun);}
+  .day-label{width:52px;flex-shrink:0;font-size:13px;font-weight:500;line-height:1.3;}
+  .day-label .dow{display:block;font-size:10px;font-weight:400;color:var(--text3);margin-top:1px;}
+  .day-row.sat .day-label{color:var(--sat);}
+  .day-row.sun .day-label{color:var(--sun);}
+  .spinner-group{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+  .spinner{display:flex;align-items:center;border:1px solid var(--border);border-radius:7px;overflow:hidden;background:var(--surface2);}
+  .spin-btn{width:28px;height:32px;border:none;background:transparent;color:var(--text2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+  .spin-btn:active{background:var(--border);}
+  .spin-val{width:46px;height:32px;text-align:center;font-family:var(--mono);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--border);border-right:1px solid var(--border);background:var(--surface);}
+  .spin-val.empty{color:var(--text3);}
+  .arrow-sep{font-size:11px;color:var(--text3);flex-shrink:0;}
+  .time-label{font-family:var(--mono);font-size:10px;color:var(--text3);flex:1;min-width:0;white-space:nowrap;}
+  .clear-btn{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--text3);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;line-height:1;}
+  .clear-btn:hover{background:var(--sun-bg);border-color:#D85A30;color:var(--sun);}
+  .comment-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;}
+  .comment-section label{display:block;font-size:11px;font-weight:500;letter-spacing:.05em;color:var(--text2);margin-bottom:8px;}
+  .comment-section textarea{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;color:var(--text);background:var(--surface2);resize:none;outline:none;line-height:1.6;}
+  .comment-section textarea:focus{border-color:var(--accent);background:var(--surface);}
+  .submit-wrap{padding-bottom:32px;}
+  .status-bar{font-size:11px;color:var(--text3);text-align:center;margin-bottom:10px;font-family:var(--mono);}
+  .status-bar span{color:var(--accent);font-weight:500;}
+
+  /* ADMIN */
+  #admin-screen{display:none;min-height:100vh;}
+  .admin-header{background:var(--text);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+  .admin-title{font-size:14px;font-weight:700;}
+  .admin-sub{font-size:11px;opacity:.5;font-family:var(--mono);margin-top:2px;}
+  .admin-tab-bar{display:flex;background:#2C2C2A;}
+  .admin-tab-btn{flex:1;padding:11px 8px;font-family:var(--sans);font-size:13px;font-weight:500;color:rgba(255,255,255,.5);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;}
+  .admin-tab-btn.active{color:#fff;border-bottom-color:#EBF0E4;}
+  .admin-tab-panel{display:none;}
+  .admin-tab-panel.active{display:block;}
+  .admin-wrap{padding:16px;max-width:900px;margin:0 auto;}
+  .publish-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .publish-info p{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
+  .publish-info small{font-size:11px;color:var(--text3);font-family:var(--mono);}
+  .publish-btn{padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s;white-space:nowrap;}
+  .publish-btn:hover{opacity:.85;}
+  .publish-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .admin-person-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;}
+  .admin-person-header{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+  .admin-person-header:hover{background:var(--surface2);}
+  .admin-person-name{font-size:14px;font-weight:500;}
+  .admin-person-meta{font-size:11px;color:var(--text3);font-family:var(--mono);}
+  .admin-chevron{color:var(--text3);font-size:12px;transition:transform .2s;}
+  .admin-chevron.open{transform:rotate(180deg);}
+  .admin-person-body{display:none;border-top:1px solid var(--border);}
+  .admin-person-body.open{display:block;}
+  .admin-shift-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .admin-shift-table td{padding:7px 14px;border-bottom:1px solid var(--border);}
+  .admin-shift-table tr:last-child td{border-bottom:none;}
+  .admin-shift-table .td-date{color:var(--text2);width:80px;font-family:var(--mono);}
+  .admin-shift-table .td-time{font-family:var(--mono);font-weight:500;color:var(--accent);}
+  .admin-shift-table .td-off{color:var(--text3);}
+  .no-submit{padding:14px;font-size:12px;color:var(--text3);}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;transition:transform .3s ease;z-index:100;white-space:nowrap;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Shift Manager</div>
+    <div class="login-title">シフト管理</div>
+    <div class="login-sub">4月16日（水）〜 4月30日（水）</div>
+    <div class="login-label">名前を選択</div>
+    <div class="login-loading" id="login-loading">読み込み中...</div>
+    <select class="name-select" id="name-select" style="display:none" onchange="onNameChange()">
+      <option value="">-- 選択してください --</option>
+    </select>
+    <div class="pw-wrap" id="pw-wrap">
+      <input type="password" id="pw-input" placeholder="パスワード" autocomplete="off">
+    </div>
+    <div class="login-err" id="login-err">パスワードが違います</div>
+    <button class="btn-primary" id="login-btn" disabled onclick="doLogin()">ログイン</button>
+  </div>
+</div>
+
+<!-- EMPLOYEE APP -->
+<div id="app-screen">
+  <div class="app-header">
+    <div>
+      <div class="app-header-name" id="header-name"></div>
+      <div class="app-header-period">4/16 – 4/30</div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-confirmed" onclick="switchTab('confirmed')">確定シフト</button>
+    <button class="tab-btn" id="tab-hope" onclick="switchTab('hope')">希望シフト提出</button>
+  </div>
+  <div class="tab-panel active" id="panel-confirmed">
+    <div class="confirmed-wrap">
+      <div class="confirmed-meta" id="confirmed-meta"></div>
+      <div id="confirmed-body"><div class="loading-msg">読み込み中...</div></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="panel-hope">
+    <div class="content">
+      <div class="shift-list" id="shift-list"></div>
+      <div class="comment-section">
+        <label>全体コメント（任意）</label>
+        <textarea id="global-comment" rows="3" placeholder="シフト全体に関する希望・連絡事項など"></textarea>
+      </div>
+      <div class="submit-wrap">
+        <div class="status-bar" id="status-bar"></div>
+        <button class="btn-primary" onclick="doSubmit()">提出する</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-screen">
+  <div class="admin-header">
+    <div>
+      <div class="admin-title">管理者ビュー</div>
+      <div class="admin-sub">4/16 – 4/30</div>
+    </div>
+    <button class="logout-btn" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="doLogout()">ログアウト</button>
+  </div>
+  <div class="admin-tab-bar">
+    <button class="admin-tab-btn active" id="atab-confirmed" onclick="switchAdminTab('confirmed')">確定シフト</button>
+    <button class="admin-tab-btn" id="atab-hope" onclick="switchAdminTab('hope')">希望シフト一覧</button>
+  </div>
+  <div class="admin-tab-panel active" id="apanel-confirmed">
+    <div class="admin-wrap">
+      <div class="publish-card">
+        <div class="publish-info">
+          <p>確定シフトを編集・公開</p>
+          <small id="last-published">最終公開: 未公開</small>
+        </div>
+        <button class="publish-btn" id="publish-btn" onclick="doPublish()">公開する</button>
+      </div>
+      <div class="confirmed-meta" id="admin-confirmed-meta"></div>
+      <div id="admin-confirmed-body"><div class="loading-msg">読み込み中...</div></div>
+    </div>
+  </div>
+  <div class="admin-tab-panel" id="apanel-hope">
+    <div class="admin-wrap">
+      <div id="admin-hope-body"><div class="loading-msg">読み込み中...</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyT8aDa5ry55wtUmuccXRjei0HQeYdqsEmKUnHueyCsK75E4EpJPVL67GTWxmCmfNc1uQ/exec';
+const ADMIN_PW = 'Poteri1230';
+const MIN_VAL = 6.5, MAX_VAL = 16.0;
+const DOW_JP = ['日','月','火','水','木','金','土'];
+const DATES = [];
+for (let d = 16; d <= 30; d++) {
+  const dt = new Date(2025, 3, d);
+  DATES.push({ d, dow: DOW_JP[dt.getDay()], sat: dt.getDay()===6, sun: dt.getDay()===0 });
+}
+
+let currentUser = null;
+let appNames = []; // スプシから取得したユーザ一覧
+let shiftState = {};
+
+// ===== JSONP helper =====
+function jsonpFetch(params, timeout=12000) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const url = APPS_SCRIPT_URL + '?' + params + '&callback=' + cbName + '&t=' + Date.now();
+    let timer = setTimeout(() => {
+      cleanup(); reject(new Error('timeout'));
+    }, timeout);
+    function cleanup() {
+      clearTimeout(timer);
+      const s = document.getElementById(cbName);
+      if (s) s.remove();
+      delete window[cbName];
+    }
+    window[cbName] = (data) => { cleanup(); resolve(data); };
+    const s = document.createElement('script');
+    s.id = cbName;
+    s.onerror = () => { cleanup(); reject(new Error('script error')); };
+    s.src = url;
+    document.head.appendChild(s);
+  });
+}
+
+// ===== LOGIN =====
+async function loadUsers() {
+  try {
+    const data = await jsonpFetch('action=getUsers&v=' + Date.now());
+    if (data && data.names && data.names.length > 0) {
+      appNames = data.names;
+    }
+  } catch(e) {
+    console.warn('ユーザ取得失敗、フォールバック使用');
+    appNames = [
+      '高城桃花','大辺陽輝','石橋李菜','清水由起子',
+      '松井愛弓','大貫理恵','山邉奈々葉','Sneha',
+      '平井環姫','清末真寿美','正田玲子','トゥオン',
+      '高見京子','雨宮一美'
+    ];
+  }
+  const sel = document.getElementById('name-select');
+  appNames.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n; opt.textContent = n;
+    sel.appendChild(opt);
+  });
+  // 管理者を末尾に追加
+  const adminOpt = document.createElement('option');
+  adminOpt.value = '管理者'; adminOpt.textContent = '管理者';
+  sel.appendChild(adminOpt);
+
+  document.getElementById('login-loading').style.display = 'none';
+  sel.style.display = 'block';
+}
+
+function onNameChange() {
+  const sel = document.getElementById('name-select');
+  const name = sel.value;
+  document.getElementById('pw-wrap').style.display = name === '管理者' ? 'block' : 'none';
+  document.getElementById('login-err').style.display = 'none';
+  document.getElementById('login-btn').disabled = !name;
+}
+
+function doLogin() {
+  const name = document.getElementById('name-select').value;
+  if (!name) return;
+  if (name === '管理者') {
+    if (document.getElementById('pw-input').value !== ADMIN_PW) {
+      document.getElementById('login-err').style.display = 'block'; return;
+    }
+    showAdmin();
+  } else {
+    currentUser = name;
+    showApp();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadUsers();
+  document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+});
+
+// ===== APP =====
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('header-name').textContent = currentUser;
+  switchTab('confirmed');
+}
+
+function switchTab(tab) {
+  ['confirmed','hope'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('panel-'+t).classList.toggle('active', t===tab);
+  });
+  if (tab === 'confirmed') loadConfirmedShift(false);
+  if (tab === 'hope') initHopeTab();
+}
+
+// ===== 確定シフト取得 =====
+async function loadConfirmedShift(isAdmin) {
+  const bodyId = isAdmin ? 'admin-confirmed-body' : 'confirmed-body';
+  const metaId = isAdmin ? 'admin-confirmed-meta' : 'confirmed-meta';
+  document.getElementById(bodyId).innerHTML = '<div class="loading-msg">読み込み中...</div>';
+  try {
+    const data = await jsonpFetch('action=getConfirmed');
+    renderConfirmedTable(data, isAdmin);
+  } catch(e) {
+    document.getElementById(bodyId).innerHTML = '<div class="loading-msg">取得できませんでした。再読み込みしてください。</div>';
+  }
+}
+
+function renderConfirmedTable(data, isAdmin) {
+  const bodyId = isAdmin ? 'admin-confirmed-body' : 'confirmed-body';
+  const metaId = isAdmin ? 'admin-confirmed-meta' : 'confirmed-meta';
+
+  if (!isAdmin && (!data || !data.published)) {
+    document.getElementById(bodyId).innerHTML =
+      '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>管理者が公開すると表示されます</small></div>';
+    document.getElementById(metaId).textContent = '';
+    return;
+  }
+
+  const names = (data && data.names) ? data.names : appNames;
+  const shifts = (data && data.shifts) ? data.shifts : {};
+  const metaEl = document.getElementById(metaId);
+  if (metaEl) metaEl.textContent = data && data.publishedAt ? '公開日時: ' + data.publishedAt : '';
+
+  const shortNames = names.map(n => {
+    const p = n.trim().split(/\s+/);
+    return p[0].length <= 4 ? p[0] : p[0].slice(0,4);
+  });
+
+  let thead = '<tr><th class="th-date">日付</th>';
+  shortNames.forEach(n => { thead += `<th>${n}</th>`; });
+  thead += '</tr>';
+
+  let tbody = '';
+  DATES.forEach(({ d, dow, sat, sun }) => {
+    const trClass = sat ? 'sat' : sun ? 'sun' : '';
+    let row = `<tr class="${trClass}"><td class="td-date">4/${d}(${dow})</td>`;
+    names.forEach((name, ni) => {
+      const s = shifts[name] && shifts[name][String(d)];
+      const sv = s && s.s !== null ? parseFloat(s.s) : null;
+      const ev = s && s.e !== null ? parseFloat(s.e) : null;
+      if (isAdmin) {
+        row += `<td class="editable">
+          <input type="text" data-name="${name}" data-d="${d}" data-key="s"
+            value="${sv!==null ? valToTime(sv) : ''}" placeholder="—"
+            class="${sv===null?'empty-val':''}">
+          <br>
+          <input type="text" data-name="${name}" data-d="${d}" data-key="e"
+            value="${ev!==null ? valToTime(ev) : ''}" placeholder="—"
+            class="${ev===null?'empty-val':''}">
+        </td>`;
+      } else {
+        row += sv!==null && ev!==null
+          ? `<td class="has-val">${valToTime(sv)}<br>${valToTime(ev)}</td>`
+          : `<td class="no-val">—</td>`;
+      }
+    });
+    row += '</tr>';
+    tbody += row;
+  });
+
+  document.getElementById(bodyId).innerHTML =
+    `<div class="table-scroll"><table class="cs-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
+
+  if (isAdmin) {
+    document.querySelectorAll('#admin-confirmed-body .editable input').forEach(input => {
+      input.addEventListener('input', () => input.classList.toggle('empty-val', !input.value));
+    });
+  }
+}
+
+// ===== 希望シフト一覧取得（管理者）=====
+async function loadHopeShifts() {
+  document.getElementById('admin-hope-body').innerHTML = '<div class="loading-msg">読み込み中...</div>';
+  try {
+    const data = await jsonpFetch('action=getHope');
+    renderHopeList(data);
+  } catch(e) {
+    document.getElementById('admin-hope-body').innerHTML = '<div class="loading-msg">取得できませんでした。</div>';
+  }
+}
+
+function renderHopeList(data) {
+  const names = (data && data.names) ? data.names : appNames;
+  const shifts = (data && data.shifts) ? data.shifts : {};
+  const wrap = document.getElementById('admin-hope-body');
+  wrap.innerHTML = '';
+  names.forEach(name => {
+    const personShifts = shifts[name] || {};
+    const count = DATES.filter(({d}) => {
+      const s = personShifts[String(d)];
+      return s && (s.s !== null || s.e !== null);
+    }).length;
+    const card = document.createElement('div');
+    card.className = 'admin-person-card';
+    let rows = '';
+    DATES.forEach(({d, dow}) => {
+      const s = personShifts[String(d)];
+      const hasShift = s && (s.s !== null || s.e !== null);
+      const timeStr = hasShift
+        ? `${s.s!==null?valToTime(s.s):'?'} 〜 ${s.e!==null?valToTime(s.e):'?'}`
+        : '休み';
+      rows += `<tr><td class="td-date">${d}(${dow})</td>
+        <td class="${hasShift?'td-time':'td-off'}">${timeStr}</td></tr>`;
+    });
+    card.innerHTML = `
+      <div class="admin-person-header" onclick="toggleAdmin(this)">
+        <div>
+          <div class="admin-person-name">${name}</div>
+          <div class="admin-person-meta">${count > 0 ? `提出済 ${count}日入力` : '未提出'}</div>
+        </div>
+        <div class="admin-chevron">▼</div>
+      </div>
+      <div class="admin-person-body">
+        <table class="admin-shift-table">${rows}</table>
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+
+function toggleAdmin(header) {
+  header.nextElementSibling.classList.toggle('open');
+  header.querySelector('.admin-chevron').classList.toggle('open');
+}
+
+// ===== 公開ボタン =====
+async function doPublish() {
+  // テーブルの編集内容を収集
+  const inputs = document.querySelectorAll('#admin-confirmed-body .editable input');
+  if (!inputs.length) {
+    showToast('先に確定シフトを読み込んでください'); return;
+  }
+  const editedShifts = {};
+  inputs.forEach(input => {
+    const name = input.dataset.name;
+    const d    = input.dataset.d;
+    const key  = input.dataset.key;
+    if (!editedShifts[name]) editedShifts[name] = {};
+    if (!editedShifts[name][d]) editedShifts[name][d] = { s: null, e: null };
+    editedShifts[name][d][key] = timeToVal(input.value);
+  });
+
+  const btn = document.getElementById('publish-btn');
+  btn.disabled = true; btn.textContent = '公開中...';
+  try {
+    const payload = encodeURIComponent(JSON.stringify(editedShifts));
+    const data = await jsonpFetch('action=publish&payload=' + payload, 20000);
+    if (data && data.status === 'ok') {
+      const ts = new Date().toLocaleString('ja-JP');
+      localStorage.setItem('lastPublished', ts);
+      document.getElementById('last-published').textContent = '最終公開: ' + ts;
+      showToast('確定シフトを公開しました');
+    } else {
+      showToast('公開に失敗しました: ' + (data && data.message || ''));
+    }
+  } catch(e) {
+    showToast('公開に失敗しました');
+  }
+  btn.disabled = false; btn.textContent = '公開する';
+}
+
+// ===== ADMIN =====
+function showAdmin() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-screen').style.display = 'block';
+  const ts = localStorage.getItem('lastPublished');
+  if (ts) document.getElementById('last-published').textContent = '最終公開: ' + ts;
+  switchAdminTab('confirmed');
+}
+
+function switchAdminTab(tab) {
+  ['confirmed','hope'].forEach(t => {
+    document.getElementById('atab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('apanel-'+t).classList.toggle('active', t===tab);
+  });
+  if (tab === 'confirmed') loadConfirmedShift(true);
+  if (tab === 'hope') loadHopeShifts();
+}
+
+// ===== 希望シフト入力 =====
+function initHopeTab() {
+  shiftState = {};
+  DATES.forEach(({d}) => { shiftState[d] = {s:null, e:null}; });
+  const saved = loadSaved(currentUser);
+  if (saved) {
+    Object.assign(shiftState, saved.shifts);
+    document.getElementById('global-comment').value = saved.comment || '';
+  }
+  buildShiftList();
+  updateStatus();
+}
+
+function valToTime(v) {
+  if (v===null||v===undefined||v==='') return '';
+  v = parseFloat(v);
+  if (isNaN(v)) return '';
+  return Math.floor(v) + ':' + (v%1>=0.4999?'30':'00');
+}
+function timeToVal(str) {
+  if (!str||str.trim()===''||str.trim()==='—') return null;
+  str = str.trim();
+  if (str.includes(':')) {
+    const [h,m] = str.split(':').map(Number);
+    return h + (m>=30?0.5:0);
+  }
+  const v = parseFloat(str);
+  return isNaN(v) ? null : v;
+}
+function toDisp(v) {
+  if (v===null) return '—';
+  return Math.floor(v) + ':' + (v%1>=0.4999?'30':'00');
+}
+function toTime(v) {
+  if (v===null) return null;
+  return Math.floor(v) + ':' + (v%1>=0.4999?'30':'00');
+}
+
+function buildShiftList() {
+  const list = document.getElementById('shift-list');
+  list.innerHTML = '';
+  DATES.forEach(({d,dow,sat,sun}) => {
+    const row = document.createElement('div');
+    row.className = 'day-row'+(sat?' sat':sun?' sun':'');
+    row.id = 'row-'+d;
+    row.innerHTML = `
+      <div class="day-label">4/${d}<span class="dow">${dow}</span></div>
+      <div class="spinner-group">
+        <div class="spinner">
+          <button class="spin-btn" ontouchstart="" onclick="spin(${d},'s',-1)">−</button>
+          <div class="spin-val ${shiftState[d].s===null?'empty':''}" id="sv-${d}-s">${toDisp(shiftState[d].s)}</div>
+          <button class="spin-btn" ontouchstart="" onclick="spin(${d},'s',1)">+</button>
+        </div>
+        <div class="arrow-sep">→</div>
+        <div class="spinner">
+          <button class="spin-btn" ontouchstart="" onclick="spin(${d},'e',-1)">−</button>
+          <div class="spin-val ${shiftState[d].e===null?'empty':''}" id="sv-${d}-e">${toDisp(shiftState[d].e)}</div>
+          <button class="spin-btn" ontouchstart="" onclick="spin(${d},'e',1)">+</button>
+        </div>
+      </div>
+      <div class="time-label" id="tl-${d}">${getTimeLabel(d)}</div>
+      <button class="clear-btn" ontouchstart="" onclick="clearDay(${d})">✕</button>`;
+    list.appendChild(row);
+    updateRowStyle(d);
+  });
+}
+function getTimeLabel(d) {
+  const s=shiftState[d].s, e=shiftState[d].e;
+  if (s===null&&e===null) return '休み';
+  return (s!==null?toTime(s):'?')+'〜'+(e!==null?toTime(e):'?');
+}
+function spin(d,key,dir) {
+  let cur = shiftState[d][key];
+  if (cur===null) { cur = key==='s'?MIN_VAL:MAX_VAL; }
+  else {
+    cur = Math.round((cur+dir*0.5)*100)/100;
+    if (cur<MIN_VAL) { shiftState[d][key]=null; updateSpinUI(d,key); updateRowStyle(d); updateStatus(); return; }
+    if (cur>MAX_VAL) cur=MAX_VAL;
+  }
+  shiftState[d][key]=cur;
+  updateSpinUI(d,key); updateRowStyle(d); updateStatus();
+}
+function updateSpinUI(d,key) {
+  const v=shiftState[d][key];
+  const el=document.getElementById('sv-'+d+'-'+key);
+  if (!el) return;
+  el.textContent=toDisp(v);
+  el.className='spin-val'+(v===null?' empty':'');
+  document.getElementById('tl-'+d).textContent=getTimeLabel(d);
+}
+function updateRowStyle(d) {
+  const row=document.getElementById('row-'+d);
+  if (!row) return;
+  const dt=DATES.find(x=>x.d===d);
+  row.className='day-row'+(dt.sat?' sat':dt.sun?' sun':(shiftState[d].s!==null||shiftState[d].e!==null?' has-shift':''));
+}
+function clearDay(d) {
+  shiftState[d].s=null; shiftState[d].e=null;
+  updateSpinUI(d,'s'); updateSpinUI(d,'e');
+  updateRowStyle(d); updateStatus();
+}
+function updateStatus() {
+  const count=DATES.filter(({d})=>shiftState[d].s!==null||shiftState[d].e!==null).length;
+  document.getElementById('status-bar').innerHTML=`入力済み <span>${count}</span> / ${DATES.length} 日`;
+}
+function doSubmit() {
+  const payload = {
+    name: currentUser,
+    shifts: JSON.parse(JSON.stringify(shiftState)),
+    comment: document.getElementById('global-comment').value,
+    submittedAt: new Date().toISOString()
+  };
+  saveLocal(currentUser, payload);
+  jsonpFetch('data='+encodeURIComponent(JSON.stringify(payload)))
+    .then(() => showToast('提出しました'))
+    .catch(() => showToast('提出しました（オフライン保存済み）'));
+}
+
+// ===== STORAGE =====
+function saveLocal(name,data){try{localStorage.setItem('shift_'+name,JSON.stringify(data));}catch(e){}}
+function loadSaved(name){try{return JSON.parse(localStorage.getItem('shift_'+name));}catch(e){return null;}}
+
+// ===== LOGOUT =====
+function doLogout() {
+  currentUser=null;
+  document.getElementById('app-screen').style.display='none';
+  document.getElementById('admin-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('name-select').value='';
+  document.getElementById('pw-wrap').style.display='none';
+  document.getElementById('pw-input').value='';
+  document.getElementById('login-err').style.display='none';
+  document.getElementById('login-btn').disabled=true;
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>
