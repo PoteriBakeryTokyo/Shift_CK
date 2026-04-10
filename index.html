@@ -253,19 +253,20 @@ let shiftState = {};
 function jsonpFetch(params, timeout=12000) {
   return new Promise((resolve, reject) => {
     const cbName = '_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    // callbackとtはここで付加、paramsはそのまま使う（呼び出し元でエンコード済み）
     const url = APPS_SCRIPT_URL + '?' + params + '&callback=' + cbName + '&t=' + Date.now();
-    let timer = setTimeout(() => {
-      cleanup(); reject(new Error('timeout'));
-    }, timeout);
+    let timer = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, timeout);
     function cleanup() {
       clearTimeout(timer);
       const s = document.getElementById(cbName);
       if (s) s.remove();
       delete window[cbName];
     }
+    // コールバックを先に登録してからscriptを追加
     window[cbName] = (data) => { cleanup(); resolve(data); };
     const s = document.createElement('script');
     s.id = cbName;
+    s.crossOrigin = 'anonymous';
     s.onerror = () => { cleanup(); reject(new Error('script error')); };
     s.src = url;
     document.head.appendChild(s);
@@ -353,10 +354,19 @@ async function loadConfirmedShift(isAdmin) {
   const metaId = isAdmin ? 'admin-confirmed-meta' : 'confirmed-meta';
   document.getElementById(bodyId).innerHTML = '<div class="loading-msg">読み込み中...</div>';
   try {
-    const data = await jsonpFetch('action=getConfirmed');
+    const data = await jsonpFetch('action=getConfirmed', 20000);
     renderConfirmedTable(data, isAdmin);
   } catch(e) {
-    document.getElementById(bodyId).innerHTML = '<div class="loading-msg">取得できませんでした。再読み込みしてください。</div>';
+    console.warn('getConfirmed error:', e);
+    if (isAdmin) {
+      // 管理者は空テーブルを表示
+      renderConfirmedTable({ published: false, names: appNames, shifts: {} }, isAdmin);
+    } else {
+      // 従業員は未公開メッセージ
+      document.getElementById(bodyId).innerHTML =
+        '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>管理者が公開すると表示されます</small></div>';
+      document.getElementById(metaId).textContent = '';
+    }
   }
 }
 
@@ -644,9 +654,45 @@ function doSubmit() {
     submittedAt: new Date().toISOString()
   };
   saveLocal(currentUser, payload);
-  jsonpFetch('data='+encodeURIComponent(JSON.stringify(payload)))
-    .then(() => showToast('提出しました'))
-    .catch(() => showToast('提出しました（オフライン保存済み）'));
+  const btn = document.querySelector('#panel-hope .btn-primary');
+  btn.disabled = true; btn.textContent = '送信中...';
+
+  const cbName = '_cb_submit_' + Date.now();
+  const timer = setTimeout(() => {
+    const s = document.getElementById(cbName);
+    if (s) s.remove();
+    delete window[cbName];
+    btn.disabled = false; btn.textContent = '提出する';
+    showToast('送信タイムアウト。再度お試しください。');
+  }, 30000);
+
+  window[cbName] = function(res) {
+    clearTimeout(timer);
+    const s = document.getElementById(cbName);
+    if (s) s.remove();
+    delete window[cbName];
+    btn.disabled = false; btn.textContent = '提出する';
+    if (res && res.status === 'ok') {
+      showToast('提出しました');
+    } else {
+      showToast('送信エラー: ' + (res && res.message || '不明'));
+    }
+  };
+
+  const s = document.createElement('script');
+  s.id = cbName;
+  // dataは別パラメータとして渡す（二重エンコード回避）
+  s.src = APPS_SCRIPT_URL
+    + '?callback=' + cbName
+    + '&data=' + encodeURIComponent(JSON.stringify(payload))
+    + '&t=' + Date.now();
+  s.onerror = () => {
+    clearTimeout(timer);
+    s.remove(); delete window[cbName];
+    btn.disabled = false; btn.textContent = '提出する';
+    showToast('送信失敗。再度お試しください。');
+  };
+  document.head.appendChild(s);
 }
 
 // ===== STORAGE =====
