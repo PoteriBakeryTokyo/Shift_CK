@@ -250,27 +250,35 @@ let appNames = []; // スプシから取得したユーザ一覧
 let shiftState = {};
 
 // ===== JSONP helper =====
-function jsonpFetch(params, timeout=12000) {
-  return new Promise((resolve, reject) => {
-    const cbName = '_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-    // callbackとtはここで付加、paramsはそのまま使う（呼び出し元でエンコード済み）
-    const url = APPS_SCRIPT_URL + '?' + params + '&callback=' + cbName + '&t=' + Date.now();
-    let timer = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, timeout);
-    function cleanup() {
-      clearTimeout(timer);
-      const s = document.getElementById(cbName);
-      if (s) s.remove();
-      delete window[cbName];
-    }
-    // コールバックを先に登録してからscriptを追加
-    window[cbName] = (data) => { cleanup(); resolve(data); };
-    const s = document.createElement('script');
-    s.id = cbName;
-    s.crossOrigin = 'anonymous';
-    s.onerror = () => { cleanup(); reject(new Error('script error')); };
-    s.src = url;
-    document.head.appendChild(s);
-  });
+// Apps ScriptはリダイレクトするためJSONPが使えない
+// fetchのno-corsは中身を読めない
+// → iframeなし、postMessageなし → Apps ScriptにCORSヘッダーを返させる
+// → doGetでContentService + setMimeType(JSON)でCORSが通る場合あり
+// → 最も確実: fetchでfollow redirects
+async function apiFetch(params, timeout=20000) {
+  const url = APPS_SCRIPT_URL + '?' + params + '&t=' + Date.now();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
+      redirect: 'follow'
+    });
+    clearTimeout(timer);
+    const text = await res.text();
+    // Apps ScriptはJavaScript MIMEで返すのでJSON部分を抽出
+    // callback形式: callback({...}) → {…}を取り出す
+    const match = text.match(/^[^(]*\((.+)\)\s*;?\s*$/s);
+    if (match) return JSON.parse(match[1]);
+    return JSON.parse(text);
+  } catch(e) {
+    clearTimeout(timer);
+    throw e;
+  }
+}
+
+function jsonpFetch(params, timeout=20000) {
+  return apiFetch(params, timeout);
 }
 
 // ===== LOGIN =====
