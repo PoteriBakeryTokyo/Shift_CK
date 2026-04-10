@@ -250,35 +250,26 @@ let appNames = []; // スプシから取得したユーザ一覧
 let shiftState = {};
 
 // ===== JSONP helper =====
-// HtmlService経由でCORSが通るのでfetchで直接取得
-async function apiFetch(params, timeout=20000) {
-  const url = APPS_SCRIPT_URL + '?' + params + '&t=' + Date.now();
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeout);
-  try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      redirect: 'follow',
-      mode: 'cors'
-    });
-    clearTimeout(timer);
-    const text = await res.text();
-    // HtmlServiceはHTML wrappingなしのテキストを返す
-    // JSON or callback(...) 形式
-    const match = text.match(/^[^(]+\((.+)\)\s*;?\s*$/s);
-    if (match) return JSON.parse(match[1]);
-    return JSON.parse(text);
-  } catch(e) {
-    clearTimeout(timer);
-    throw e;
-  }
+// ===== Google Sheets API =====
+const SHEET_ID_JS = '1rX7dBiBdqqViDo0kHDUJwtSeAiP8zcyddli8TbSQqvY';
+const API_KEY = 'AIzaSyBAZkgcyDpLaPgSU05SRagot0_NPSSeNsk';
+
+async function sheetsGet(range) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID_JS}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Sheets API error: ' + res.status);
+  return res.json();
 }
 
-function jsonpFetch(params, timeout=20000) {
-  return apiFetch(params, timeout);
+async function sheetsGetMultiple(ranges) {
+  const qs = ranges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID_JS}/values:batchGet?${qs}&key=${API_KEY}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Sheets API error: ' + res.status);
+  return res.json();
 }
 
-// 書き込み専用（レスポンス不要）
+// 書き込みはApps Script（no-cors）
 async function fireAndForget(params) {
   const url = APPS_SCRIPT_URL + '?' + params + '&t=' + Date.now();
   try {
@@ -288,33 +279,42 @@ async function fireAndForget(params) {
   }
 }
 
+// 後方互換用（使わなくなるが残す）
+function jsonpFetch(params, timeout=20000) {
+  return fireAndForget(params).then(() => ({ status: 'ok' }));
+}
+
 // ===== LOGIN =====
 async function loadUsers() {
-  try {
-    const data = await jsonpFetch('action=getUsers&v=' + Date.now(), 5000);
-    if (data && data.names && data.names.length > 0) {
-      appNames = data.names;
-    }
-  } catch(e) {
-    console.warn('ユーザ取得失敗、フォールバック使用');
-    appNames = [
-      '高城桃花','大辺陽輝','石橋李菜','清水由起子',
-      '松井愛弓','大貫理恵','山邉奈々葉','Sneha',
-      '平井環姫','清末真寿美','正田玲子','トゥオン',
-      '高見京子','雨宮一美'
-    ];
-  }
+  // フォールバックで即座に表示
+  appNames = [
+    '高城桃花','大辺陽輝','石橋李菜','清水由起子',
+    '松井愛弓','大貫理恵','山邉奈々葉','Sneha',
+    '平井環姫','清末真寿美','正田玲子','トゥオン',
+    '高見京子','雨宮一美'
+  ];
+  buildNameSelect(appNames);
+
+  // Sheets APIでユーザシートから取得（バックグラウンド）
+  sheetsGet('ユーザ!A2:A30').then(data => {
+    const names = (data.values || []).map(r => String(r[0]).trim()).filter(n => n && n !== '管理者');
+    if (names.length > 0) { appNames = names; buildNameSelect(appNames); }
+  }).catch(e => console.warn('ユーザ取得失敗:', e));
+}
+
+function buildNameSelect(names) {
   const sel = document.getElementById('name-select');
-  appNames.forEach(n => {
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">-- 選択してください --</option>';
+  names.forEach(n => {
     const opt = document.createElement('option');
     opt.value = n; opt.textContent = n;
     sel.appendChild(opt);
   });
-  // 管理者を末尾に追加
   const adminOpt = document.createElement('option');
   adminOpt.value = '管理者'; adminOpt.textContent = '管理者';
   sel.appendChild(adminOpt);
-
+  if (prev) sel.value = prev;
   document.getElementById('login-loading').style.display = 'none';
   sel.style.display = 'block';
 }
@@ -369,20 +369,60 @@ async function loadConfirmedShift(isAdmin) {
   const metaId = isAdmin ? 'admin-confirmed-meta' : 'confirmed-meta';
   document.getElementById(bodyId).innerHTML = '<div class="loading-msg">読み込み中...</div>';
   try {
-    const data = await jsonpFetch('action=getConfirmed', 20000);
-    renderConfirmedTable(data, isAdmin);
-  } catch(e) {
-    console.warn('getConfirmed error:', e);
-    if (isAdmin) {
-      // 管理者は空テーブルを表示
-      renderConfirmedTable({ published: false, names: appNames, shifts: {} }, isAdmin);
-    } else {
-      // 従業員は未公開メッセージ
+    // メタシートで公開フラグを確認
+    const metaData = await sheetsGet('メタ!A1:B2');
+    const metaRows = metaData.values || [];
+    const published = metaRows[0] && metaRows[0][1] == '1';
+    const publishedAt = metaRows[1] && metaRows[1][1] || '';
+
+    if (!isAdmin && !published) {
       document.getElementById(bodyId).innerHTML =
         '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>管理者が公開すると表示されます</small></div>';
       document.getElementById(metaId).textContent = '';
+      return;
+    }
+
+    // 確定シフトシートを読む
+    const shifts = await readSheetShifts('確定シフト');
+    const data = { published, publishedAt, names: appNames, shifts };
+    renderConfirmedTable(data, isAdmin);
+  } catch(e) {
+    console.error('loadConfirmedShift error:', e);
+    if (isAdmin) {
+      renderConfirmedTable({ published: false, names: appNames, shifts: {} }, isAdmin);
+    } else {
+      document.getElementById(bodyId).innerHTML =
+        '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>管理者が公開すると表示されます</small></div>';
     }
   }
+}
+
+// スプシのシフトシートを読んで {名前: {d: {s,e}}} 形式に変換
+async function readSheetShifts(sheetName) {
+  const totalRows = 1 + DATES.length * 2; // ヘッダー1行 + 日付15日×2行
+  const data = await sheetsGet(sheetName + '!A1:Z' + totalRows);
+  const rows = data.values || [];
+  if (!rows.length) return {};
+
+  // 1行目ヘッダーから従業員名と列インデックスを取得
+  const header = rows[0];
+  const result = {};
+  appNames.forEach(name => {
+    const colIdx = header.indexOf(name);
+    if (colIdx === -1) return;
+    result[name] = {};
+    DATES.forEach(({ d }, i) => {
+      const startRow = 1 + i * 2;  // 0-indexed
+      const endRow = startRow + 1;
+      const sv = rows[startRow] && rows[startRow][colIdx];
+      const ev = rows[endRow]   && rows[endRow][colIdx];
+      result[name][String(d)] = {
+        s: sv !== undefined && sv !== '' ? parseFloat(sv) : null,
+        e: ev !== undefined && ev !== '' ? parseFloat(ev) : null
+      };
+    });
+  });
+  return result;
 }
 
 function renderConfirmedTable(data, isAdmin) {
@@ -452,9 +492,10 @@ function renderConfirmedTable(data, isAdmin) {
 async function loadHopeShifts() {
   document.getElementById('admin-hope-body').innerHTML = '<div class="loading-msg">読み込み中...</div>';
   try {
-    const data = await jsonpFetch('action=getHope');
-    renderHopeList(data);
+    const shifts = await readSheetShifts('希望シフト');
+    renderHopeList({ names: appNames, shifts });
   } catch(e) {
+    console.error('loadHopeShifts error:', e);
     document.getElementById('admin-hope-body').innerHTML = '<div class="loading-msg">取得できませんでした。</div>';
   }
 }
