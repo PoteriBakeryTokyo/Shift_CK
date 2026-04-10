@@ -250,59 +250,48 @@ let appNames = []; // スプシから取得したユーザ一覧
 let shiftState = {};
 
 // ===== JSONP helper =====
-// Apps ScriptへのアクセスはJSONP(scriptタグ)で行う
-// リダイレクト問題の回避: crossoriginなしで実行
-function jsonpFetch(params, timeout=25000) {
-  return new Promise((resolve, reject) => {
-    const cbName = '_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-    const url = APPS_SCRIPT_URL + '?' + params + '&callback=' + cbName + '&t=' + Date.now();
-    let done = false;
-    const timer = setTimeout(() => {
-      if (done) return;
-      done = true;
-      const s = document.getElementById(cbName);
-      if (s) s.remove();
-      delete window[cbName];
-      reject(new Error('timeout'));
-    }, timeout);
-    window[cbName] = (data) => {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      const s = document.getElementById(cbName);
-      if (s) s.remove();
-      delete window[cbName];
-      resolve(data);
-    };
-    const s = document.createElement('script');
-    s.id = cbName;
-    s.onerror = () => {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      s.remove();
-      delete window[cbName];
-      reject(new Error('load error'));
-    };
-    s.src = url;
-    document.head.appendChild(s);
-  });
+// HtmlService経由でCORSが通るのでfetchで直接取得
+async function apiFetch(params, timeout=20000) {
+  const url = APPS_SCRIPT_URL + '?' + params + '&t=' + Date.now();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
+      redirect: 'follow',
+      mode: 'cors'
+    });
+    clearTimeout(timer);
+    const text = await res.text();
+    // HtmlServiceはHTML wrappingなしのテキストを返す
+    // JSON or callback(...) 形式
+    const match = text.match(/^[^(]+\((.+)\)\s*;?\s*$/s);
+    if (match) return JSON.parse(match[1]);
+    return JSON.parse(text);
+  } catch(e) {
+    clearTimeout(timer);
+    throw e;
+  }
 }
 
-// 書き込み専用（no-cors fetch、レスポンス不要）
+function jsonpFetch(params, timeout=20000) {
+  return apiFetch(params, timeout);
+}
+
+// 書き込み専用（レスポンス不要）
 async function fireAndForget(params) {
   const url = APPS_SCRIPT_URL + '?' + params + '&t=' + Date.now();
   try {
-    await fetch(url, { method: 'GET', mode: 'no-cors' });
+    await fetch(url, { method: 'GET', mode: 'no-cors', redirect: 'follow' });
   } catch(e) {
-    console.warn('fireAndForget error:', e);
+    console.warn('fireAndForget:', e);
   }
 }
 
 // ===== LOGIN =====
 async function loadUsers() {
   try {
-    const data = await jsonpFetch('action=getUsers&v=' + Date.now());
+    const data = await jsonpFetch('action=getUsers&v=' + Date.now(), 5000);
     if (data && data.names && data.names.length > 0) {
       appNames = data.names;
     }
