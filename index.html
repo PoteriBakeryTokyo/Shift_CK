@@ -514,7 +514,7 @@ function toggleAdmin(header) {
 }
 
 // ===== 公開ボタン =====
-async function doPublish() {
+async async function doPublish() {
   // テーブルの編集内容を収集
   const inputs = document.querySelectorAll('#admin-confirmed-body .editable input');
   if (!inputs.length) {
@@ -669,7 +669,7 @@ function updateStatus() {
   const count=DATES.filter(({d})=>shiftState[d].s!==null||shiftState[d].e!==null).length;
   document.getElementById('status-bar').innerHTML=`入力済み <span>${count}</span> / ${DATES.length} 日`;
 }
-function doSubmit() {
+async function doSubmit() {
   const payload = {
     name: currentUser,
     shifts: JSON.parse(JSON.stringify(shiftState)),
