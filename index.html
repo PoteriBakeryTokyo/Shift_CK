@@ -544,12 +544,13 @@ function toggleAdmin(header) {
 }
 
 // ===== 公開ボタン =====
-async async function doPublish() {
-  // テーブルの編集内容を収集
+async function doPublish() {
   const inputs = document.querySelectorAll('#admin-confirmed-body .editable input');
   if (!inputs.length) {
     showToast('先に確定シフトを読み込んでください'); return;
   }
+
+  // 編集内容をApps Scriptに送信（名前ごとに分割して送信）
   const editedShifts = {};
   inputs.forEach(input => {
     const name = input.dataset.name;
@@ -561,11 +562,17 @@ async async function doPublish() {
   });
 
   const btn = document.getElementById('publish-btn');
-  btn.disabled = true; btn.textContent = '公開中...';
+  btn.disabled = true; btn.textContent = '保存・公開中...';
+
   try {
-    const payload = encodeURIComponent(JSON.stringify(editedShifts));
-    // 確定シフト上書き + 公開フラグON をno-cors fetchで送信
-    await fireAndForget('action=publish&payload=' + payload);
+    // 1人ずつ分割して送信（URLサイズ上限対策）
+    for (const name of appNames) {
+      if (!editedShifts[name]) continue;
+      const singlePayload = { name, shifts: editedShifts[name] };
+      await fireAndForget('action=updateConfirmedOne&payload=' + encodeURIComponent(JSON.stringify(singlePayload)));
+    }
+    // 全員送信後に公開フラグON
+    await fireAndForget('action=publish');
     const ts = new Date().toLocaleString('ja-JP');
     localStorage.setItem('lastPublished', ts);
     document.getElementById('last-published').textContent = '最終公開: ' + ts;
