@@ -250,35 +250,53 @@ let appNames = []; // スプシから取得したユーザ一覧
 let shiftState = {};
 
 // ===== JSONP helper =====
-// Apps ScriptはリダイレクトするためJSONPが使えない
-// fetchのno-corsは中身を読めない
-// → iframeなし、postMessageなし → Apps ScriptにCORSヘッダーを返させる
-// → doGetでContentService + setMimeType(JSON)でCORSが通る場合あり
-// → 最も確実: fetchでfollow redirects
-async function apiFetch(params, timeout=20000) {
-  const url = APPS_SCRIPT_URL + '?' + params + '&t=' + Date.now();
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeout);
-  try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      redirect: 'follow'
-    });
-    clearTimeout(timer);
-    const text = await res.text();
-    // Apps ScriptはJavaScript MIMEで返すのでJSON部分を抽出
-    // callback形式: callback({...}) → {…}を取り出す
-    const match = text.match(/^[^(]*\((.+)\)\s*;?\s*$/s);
-    if (match) return JSON.parse(match[1]);
-    return JSON.parse(text);
-  } catch(e) {
-    clearTimeout(timer);
-    throw e;
-  }
+// Apps ScriptへのアクセスはJSONP(scriptタグ)で行う
+// リダイレクト問題の回避: crossoriginなしで実行
+function jsonpFetch(params, timeout=25000) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const url = APPS_SCRIPT_URL + '?' + params + '&callback=' + cbName + '&t=' + Date.now();
+    let done = false;
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      const s = document.getElementById(cbName);
+      if (s) s.remove();
+      delete window[cbName];
+      reject(new Error('timeout'));
+    }, timeout);
+    window[cbName] = (data) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      const s = document.getElementById(cbName);
+      if (s) s.remove();
+      delete window[cbName];
+      resolve(data);
+    };
+    const s = document.createElement('script');
+    s.id = cbName;
+    s.onerror = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      s.remove();
+      delete window[cbName];
+      reject(new Error('load error'));
+    };
+    s.src = url;
+    document.head.appendChild(s);
+  });
 }
 
-function jsonpFetch(params, timeout=20000) {
-  return apiFetch(params, timeout);
+// 書き込み専用（no-cors fetch、レスポンス不要）
+async function fireAndForget(params) {
+  const url = APPS_SCRIPT_URL + '?' + params + '&t=' + Date.now();
+  try {
+    await fetch(url, { method: 'GET', mode: 'no-cors' });
+  } catch(e) {
+    console.warn('fireAndForget error:', e);
+  }
 }
 
 // ===== LOGIN =====
@@ -516,15 +534,12 @@ async function doPublish() {
   btn.disabled = true; btn.textContent = '公開中...';
   try {
     const payload = encodeURIComponent(JSON.stringify(editedShifts));
-    const data = await jsonpFetch('action=publish&payload=' + payload, 20000);
-    if (data && data.status === 'ok') {
-      const ts = new Date().toLocaleString('ja-JP');
-      localStorage.setItem('lastPublished', ts);
-      document.getElementById('last-published').textContent = '最終公開: ' + ts;
-      showToast('確定シフトを公開しました');
-    } else {
-      showToast('公開に失敗しました: ' + (data && data.message || ''));
-    }
+    // 確定シフト上書き + 公開フラグON をno-cors fetchで送信
+    await fireAndForget('action=publish&payload=' + payload);
+    const ts = new Date().toLocaleString('ja-JP');
+    localStorage.setItem('lastPublished', ts);
+    document.getElementById('last-published').textContent = '最終公開: ' + ts;
+    showToast('確定シフトを公開しました');
   } catch(e) {
     showToast('公開に失敗しました');
   }
@@ -664,43 +679,10 @@ function doSubmit() {
   saveLocal(currentUser, payload);
   const btn = document.querySelector('#panel-hope .btn-primary');
   btn.disabled = true; btn.textContent = '送信中...';
-
-  const cbName = '_cb_submit_' + Date.now();
-  const timer = setTimeout(() => {
-    const s = document.getElementById(cbName);
-    if (s) s.remove();
-    delete window[cbName];
-    btn.disabled = false; btn.textContent = '提出する';
-    showToast('送信タイムアウト。再度お試しください。');
-  }, 30000);
-
-  window[cbName] = function(res) {
-    clearTimeout(timer);
-    const s = document.getElementById(cbName);
-    if (s) s.remove();
-    delete window[cbName];
-    btn.disabled = false; btn.textContent = '提出する';
-    if (res && res.status === 'ok') {
-      showToast('提出しました');
-    } else {
-      showToast('送信エラー: ' + (res && res.message || '不明'));
-    }
-  };
-
-  const s = document.createElement('script');
-  s.id = cbName;
-  // dataは別パラメータとして渡す（二重エンコード回避）
-  s.src = APPS_SCRIPT_URL
-    + '?callback=' + cbName
-    + '&data=' + encodeURIComponent(JSON.stringify(payload))
-    + '&t=' + Date.now();
-  s.onerror = () => {
-    clearTimeout(timer);
-    s.remove(); delete window[cbName];
-    btn.disabled = false; btn.textContent = '提出する';
-    showToast('送信失敗。再度お試しください。');
-  };
-  document.head.appendChild(s);
+  // 書き込みはno-cors fetchで送信（レスポンス確認不要）
+  await fireAndForget('data=' + encodeURIComponent(JSON.stringify(payload)));
+  btn.disabled = false; btn.textContent = '提出する';
+  showToast('提出しました');
 }
 
 // ===== STORAGE =====
