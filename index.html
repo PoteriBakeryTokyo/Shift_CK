@@ -116,8 +116,11 @@
   .btn-sm{padding:6px 12px;background:transparent;color:var(--text);border:0.5px solid var(--border2);border-radius:7px;font-family:var(--sans);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap;}
   .btn-sm:hover{background:var(--surface2);}
   .btn-sm:disabled{opacity:.35;cursor:not-allowed;}
-  .person-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--border);}
+  .person-row{display:flex;flex-direction:column;padding:9px 0;border-bottom:.5px solid var(--border);}
   .person-row:last-child{border-bottom:none;}
+  .person-top{display:flex;align-items:center;justify-content:space-between;}
+  .comment-bubble{margin-top:7px;padding:7px 10px;background:var(--surface2);border-left:2px solid #EF9F27;border-radius:0 6px 6px 0;font-size:11px;color:var(--text2);line-height:1.5;}
+  .comment-label{font-size:10px;color:#BA7517;font-weight:500;margin-bottom:3px;}
   .person-name{font-size:13px;color:var(--text);}
   .badge{font-size:10px;padding:2px 7px;border-radius:20px;margin-left:6px;}
   .badge-done{background:var(--accent-light);color:var(--accent);}
@@ -255,26 +258,30 @@ async function gasCall(params, timeout=25000) {
 
 // ===== スプシからシフトデータを読む =====
 async function readSheetShifts(sheetName) {
-  const totalRows = 1 + DATES.length * 2;
+  const totalRows = 2 + DATES.length * 2; // ヘッダー+シフト+コメント行
   const data = await sheetsGet(sheetName + '!A1:Z' + totalRows);
   const rows = data.values || [];
   if (!rows.length) return {};
   const header = rows[0];
+  const commentRowIdx = 1 + DATES.length * 2; // 0-indexed → 32行目
   const result = {};
   appNames.forEach(name => {
     const colIdx = header.indexOf(name);
     if (colIdx === -1) return;
-    result[name] = {};
+    result[name] = { shifts: {}, comment: '' };
     DATES.forEach(({ d }, i) => {
       const sr = 1 + i * 2;
       const er = sr + 1;
       const sv = rows[sr] && rows[sr][colIdx];
       const ev = rows[er] && rows[er][colIdx];
-      result[name][String(d)] = {
+      result[name].shifts[String(d)] = {
         s: sv !== undefined && sv !== '' ? parseFloat(sv) : null,
         e: ev !== undefined && ev !== '' ? parseFloat(ev) : null
       };
     });
+    // コメント行
+    const commentRow = rows[commentRowIdx];
+    result[name].comment = commentRow && commentRow[colIdx] ? String(commentRow[colIdx]) : '';
   });
   return result;
 }
@@ -390,7 +397,8 @@ function renderConfirmedTable(shifts) {
     const trClass = sat ? 'sat' : sun ? 'sun' : '';
     let row = `<tr class="${trClass}"><td class="td-date">4/${d}(${dow})</td>`;
     appNames.forEach(name => {
-      const s = shifts[name] && shifts[name][String(d)];
+      const sd = shifts[name] && shifts[name].shifts;
+      const s = sd && sd[String(d)];
       const sv = s && s.s !== null ? s.s : null;
       const ev = s && s.e !== null ? s.e : null;
       row += sv!==null && ev!==null
@@ -414,7 +422,7 @@ async function initHopeTab() {
     const shifts = await readSheetShifts('希望シフト');
     if (shifts[currentUser]) {
       DATES.forEach(({d}) => {
-        const s = shifts[currentUser][String(d)];
+        const s = shifts[currentUser].shifts[String(d)];
         if (s) shiftState[d] = { s: s.s, e: s.e };
       });
     }
@@ -447,7 +455,7 @@ async function doSubmit() {
 
   try {
     const latest = await readSheetShifts('希望シフト');
-    const latestUser = latest[currentUser] || {};
+    const latestUser = (latest[currentUser] && latest[currentUser].shifts) || {};
     let matched = true;
     DATES.forEach(({ d }) => {
       const sent = payload.shifts[d] || { s: null, e: null };
@@ -494,31 +502,37 @@ function showAdmin() {
 async function buildPersonList() {
   const wrap = document.getElementById('person-list');
   wrap.innerHTML = '<div class="loading-msg" style="padding:12px 0;">読み込み中...</div>';
-  // 提出済み判定：希望シフトに1件でも値があるか
   let submitted = {};
+  let comments = {};
   try {
     const shifts = await readSheetShifts('希望シフト');
     appNames.forEach(name => {
+      const sd = shifts[name] && shifts[name].shifts;
       submitted[name] = DATES.some(({d}) => {
-        const s = shifts[name] && shifts[name][String(d)];
+        const s = sd && sd[String(d)];
         return s && (s.s !== null || s.e !== null);
       });
+      comments[name] = (shifts[name] && shifts[name].comment) || '';
     });
   } catch(e) {
-    appNames.forEach(n => { submitted[n] = false; });
+    appNames.forEach(n => { submitted[n] = false; comments[n] = ''; });
   }
 
   wrap.innerHTML = '';
   appNames.forEach(name => {
     const isDone = submitted[name];
+    const comment = comments[name];
     const row = document.createElement('div');
     row.className = 'person-row';
     row.innerHTML = `
-      <div>
-        <span class="person-name">${name}</span>
-        <span class="badge ${isDone?'badge-done':'badge-none'}">${isDone?'提出済':'未提出'}</span>
+      <div class="person-top">
+        <div>
+          <span class="person-name">${name}</span>
+          <span class="badge ${isDone?'badge-done':'badge-none'}">${isDone?'提出済':'未提出'}</span>
+        </div>
+        <button class="btn-sm" ${isDone?'':'disabled'} onclick="doCopyOne('${name}', this)">コピー</button>
       </div>
-      <button class="btn-sm" ${isDone?'':'disabled'} onclick="doCopyOne('${name}', this)">コピー</button>
+      ${comment ? `<div class="comment-bubble"><div class="comment-label">コメント</div>${comment}</div>` : ''}
     `;
     wrap.appendChild(row);
   });
