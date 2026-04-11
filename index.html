@@ -37,7 +37,7 @@
   .btn-primary:hover{opacity:.88;}
   .btn-primary:disabled{opacity:.4;cursor:not-allowed;}
 
-  /* APP HEADER */
+  /* APP */
   #app-screen{display:none;min-height:100vh;}
   .app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
   .app-header-name{font-size:15px;font-weight:700;}
@@ -52,9 +52,9 @@
   .tab-panel{display:none;}
   .tab-panel.active{display:block;}
 
-  /* CONFIRMED SHIFT TABLE */
-  .confirmed-wrap{padding:16px;max-width:900px;margin:0 auto;}
-  .confirmed-meta{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;text-align:right;}
+  /* CONFIRMED TABLE */
+  .panel-wrap{padding:16px;max-width:900px;margin:0 auto;}
+  .panel-meta{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;text-align:right;}
   .table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:10px;}
   .cs-table{border-collapse:collapse;font-size:11px;min-width:100%;}
   .cs-table th{background:#1A1814;color:#fff;padding:7px 7px;text-align:center;font-weight:500;white-space:nowrap;}
@@ -67,18 +67,12 @@
   .cs-table tr.sun td.td-date{background:var(--sun-bg);color:var(--sun);}
   .cs-table td.has-val{color:var(--accent);font-weight:500;line-height:1.6;}
   .cs-table td.no-val{color:var(--text3);}
-  /* editable cells (admin) */
-  .cs-table td.editable{padding:2px 3px;}
-  .cs-table td.editable input{width:44px;height:26px;font-family:var(--mono);font-size:11px;text-align:center;border:1px solid var(--border2);border-radius:4px;background:var(--surface);color:var(--accent);font-weight:500;padding:0 2px;}
-  .cs-table td.editable input:focus{border-color:var(--accent);outline:none;}
-  .cs-table td.editable input.empty-val{color:var(--text3);}
   .loading-msg{padding:32px;text-align:center;font-size:13px;color:var(--text3);}
   .unpublished-msg{padding:40px 16px;text-align:center;}
   .unpublished-msg p{font-size:14px;color:var(--text2);margin-bottom:6px;}
   .unpublished-msg small{font-size:12px;color:var(--text3);}
 
   /* HOPE SHIFT */
-  .content{padding:16px;max-width:600px;margin:0 auto;}
   .shift-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
   .day-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:10px;}
   .day-row.has-shift{border-left:3px solid var(--accent);}
@@ -111,34 +105,26 @@
   .admin-header{background:var(--text);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
   .admin-title{font-size:14px;font-weight:700;}
   .admin-sub{font-size:11px;opacity:.5;font-family:var(--mono);margin-top:2px;}
-  .admin-tab-bar{display:flex;background:#2C2C2A;}
-  .admin-tab-btn{flex:1;padding:11px 8px;font-family:var(--sans);font-size:13px;font-weight:500;color:rgba(255,255,255,.5);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;}
-  .admin-tab-btn.active{color:#fff;border-bottom-color:#EBF0E4;}
-  .admin-tab-panel{display:none;}
-  .admin-tab-panel.active{display:block;}
-  .admin-wrap{padding:16px;max-width:900px;margin:0 auto;}
-  .publish-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .admin-wrap{padding:16px;max-width:520px;margin:0 auto;}
+  .section-label{font-size:11px;font-weight:500;letter-spacing:.05em;color:var(--text2);margin-bottom:8px;margin-top:4px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;}
+  .card-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
+  .card-sub{font-size:11px;color:var(--text2);margin-bottom:12px;}
+  .btn-accent{padding:9px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s;white-space:nowrap;}
+  .btn-accent:hover{opacity:.85;}
+  .btn-accent:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-sm{padding:6px 12px;background:transparent;color:var(--text);border:0.5px solid var(--border2);border-radius:7px;font-family:var(--sans);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+  .btn-sm:hover{background:var(--surface2);}
+  .btn-sm:disabled{opacity:.35;cursor:not-allowed;}
+  .person-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--border);}
+  .person-row:last-child{border-bottom:none;}
+  .person-name{font-size:13px;color:var(--text);}
+  .badge{font-size:10px;padding:2px 7px;border-radius:20px;margin-left:6px;}
+  .badge-done{background:var(--accent-light);color:var(--accent);}
+  .badge-none{background:var(--surface2);color:var(--text3);}
+  .publish-card{background:var(--surface);border:2px solid var(--accent);border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
   .publish-info p{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
   .publish-info small{font-size:11px;color:var(--text3);font-family:var(--mono);}
-  .publish-btn{padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s;white-space:nowrap;}
-  .publish-btn:hover{opacity:.85;}
-  .publish-btn:disabled{opacity:.4;cursor:not-allowed;}
-  .admin-person-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;}
-  .admin-person-header{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
-  .admin-person-header:hover{background:var(--surface2);}
-  .admin-person-name{font-size:14px;font-weight:500;}
-  .admin-person-meta{font-size:11px;color:var(--text3);font-family:var(--mono);}
-  .admin-chevron{color:var(--text3);font-size:12px;transition:transform .2s;}
-  .admin-chevron.open{transform:rotate(180deg);}
-  .admin-person-body{display:none;border-top:1px solid var(--border);}
-  .admin-person-body.open{display:block;}
-  .admin-shift-table{width:100%;border-collapse:collapse;font-size:12px;}
-  .admin-shift-table td{padding:7px 14px;border-bottom:1px solid var(--border);}
-  .admin-shift-table tr:last-child td{border-bottom:none;}
-  .admin-shift-table .td-date{color:var(--text2);width:80px;font-family:var(--mono);}
-  .admin-shift-table .td-time{font-family:var(--mono);font-weight:500;color:var(--accent);}
-  .admin-shift-table .td-off{color:var(--text3);}
-  .no-submit{padding:14px;font-size:12px;color:var(--text3);}
 
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;transition:transform .3s ease;z-index:100;white-space:nowrap;}
   .toast.show{transform:translateX(-50%) translateY(0);}
@@ -165,7 +151,7 @@
   </div>
 </div>
 
-<!-- EMPLOYEE APP -->
+<!-- EMPLOYEE -->
 <div id="app-screen">
   <div class="app-header">
     <div>
@@ -179,13 +165,13 @@
     <button class="tab-btn" id="tab-hope" onclick="switchTab('hope')">希望シフト提出</button>
   </div>
   <div class="tab-panel active" id="panel-confirmed">
-    <div class="confirmed-wrap">
-      <div class="confirmed-meta" id="confirmed-meta"></div>
+    <div class="panel-wrap">
+      <div class="panel-meta" id="confirmed-meta"></div>
       <div id="confirmed-body"><div class="loading-msg">読み込み中...</div></div>
     </div>
   </div>
   <div class="tab-panel" id="panel-hope">
-    <div class="content">
+    <div class="panel-wrap">
       <div class="shift-list" id="shift-list"></div>
       <div class="comment-section">
         <label>全体コメント（任意）</label>
@@ -193,7 +179,7 @@
       </div>
       <div class="submit-wrap">
         <div class="status-bar" id="status-bar"></div>
-        <button class="btn-primary" onclick="doSubmit()">提出する</button>
+        <button class="btn-primary" id="submit-btn" onclick="doSubmit()">提出する</button>
       </div>
     </div>
   </div>
@@ -208,26 +194,24 @@
     </div>
     <button class="logout-btn" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="doLogout()">ログアウト</button>
   </div>
-  <div class="admin-tab-bar">
-    <button class="admin-tab-btn active" id="atab-confirmed" onclick="switchAdminTab('confirmed')">確定シフト</button>
-    <button class="admin-tab-btn" id="atab-hope" onclick="switchAdminTab('hope')">希望シフト一覧</button>
-  </div>
-  <div class="admin-tab-panel active" id="apanel-confirmed">
-    <div class="admin-wrap">
-      <div class="publish-card">
-        <div class="publish-info">
-          <p>確定シフトを編集・公開</p>
-          <small id="last-published">最終公開: 未公開</small>
-        </div>
-        <button class="publish-btn" id="publish-btn" onclick="doPublish()">公開する</button>
-      </div>
-      <div class="confirmed-meta" id="admin-confirmed-meta"></div>
-      <div id="admin-confirmed-body"><div class="loading-msg">読み込み中...</div></div>
+  <div class="admin-wrap">
+    <div class="section-label">希望 → 確定シフト コピー</div>
+    <div class="card">
+      <div class="card-title">全員一括コピー</div>
+      <div class="card-sub">全員の希望シフトを確定シフトへ上書きコピーします</div>
+      <button class="btn-accent" id="copy-all-btn" onclick="doCopyAll()">全員コピー実行</button>
     </div>
-  </div>
-  <div class="admin-tab-panel" id="apanel-hope">
-    <div class="admin-wrap">
-      <div id="admin-hope-body"><div class="loading-msg">読み込み中...</div></div>
+    <div class="card">
+      <div class="card-title">個別コピー</div>
+      <div class="card-sub">従業員を選んで個別にコピーします</div>
+      <div id="person-list"><div class="loading-msg" style="padding:16px 0;">読み込み中...</div></div>
+    </div>
+    <div class="publish-card">
+      <div class="publish-info">
+        <p>確定シフトを従業員に公開</p>
+        <small id="last-published">最終公開: 未公開</small>
+      </div>
+      <button class="btn-accent" id="publish-btn" onclick="doPublish()">公開する</button>
     </div>
   </div>
 </div>
@@ -236,6 +220,8 @@
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyT8aDa5ry55wtUmuccXRjei0HQeYdqsEmKUnHueyCsK75E4EpJPVL67GTWxmCmfNc1uQ/exec';
+const SHEET_ID_JS = '1rX7dBiBdqqViDo0kHDUJwtSeAiP8zcyddli8TbSQqvY';
+const API_KEY = 'AIzaSyBAZkgcyDpLaPgSU05SRagot0_NPSSeNsk';
 const ADMIN_PW = 'Poteri1230';
 const MIN_VAL = 6.5, MAX_VAL = 16.0;
 const DOW_JP = ['日','月','火','水','木','金','土'];
@@ -246,47 +232,55 @@ for (let d = 16; d <= 30; d++) {
 }
 
 let currentUser = null;
-let appNames = []; // スプシから取得したユーザ一覧
+let appNames = [];
 let shiftState = {};
 
-// ===== JSONP helper =====
-// ===== Google Sheets API =====
-const SHEET_ID_JS = '1rX7dBiBdqqViDo0kHDUJwtSeAiP8zcyddli8TbSQqvY';
-const API_KEY = 'AIzaSyBAZkgcyDpLaPgSU05SRagot0_NPSSeNsk';
-
+// ===== Sheets API (読み取り) =====
 async function sheetsGet(range) {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID_JS}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Sheets API error: ' + res.status);
+  if (!res.ok) throw new Error('Sheets API ' + res.status);
   return res.json();
 }
 
-async function sheetsGetMultiple(ranges) {
-  const qs = ranges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID_JS}/values:batchGet?${qs}&key=${API_KEY}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Sheets API error: ' + res.status);
-  return res.json();
-}
-
-// 書き込みはApps Script（no-cors）
-async function fireAndForget(params) {
+// ===== Apps Script (書き込み・操作) =====
+async function gasCall(params, timeout=25000) {
   const url = APPS_SCRIPT_URL + '?' + params + '&t=' + Date.now();
   try {
-    await fetch(url, { method: 'GET', mode: 'no-cors', redirect: 'follow' });
+    await fetch(url, { method:'GET', mode:'no-cors' });
   } catch(e) {
-    console.warn('fireAndForget:', e);
+    console.warn('gasCall error:', e);
   }
 }
 
-// 後方互換用（使わなくなるが残す）
-function jsonpFetch(params, timeout=20000) {
-  return fireAndForget(params).then(() => ({ status: 'ok' }));
+// ===== スプシからシフトデータを読む =====
+async function readSheetShifts(sheetName) {
+  const totalRows = 1 + DATES.length * 2;
+  const data = await sheetsGet(sheetName + '!A1:Z' + totalRows);
+  const rows = data.values || [];
+  if (!rows.length) return {};
+  const header = rows[0];
+  const result = {};
+  appNames.forEach(name => {
+    const colIdx = header.indexOf(name);
+    if (colIdx === -1) return;
+    result[name] = {};
+    DATES.forEach(({ d }, i) => {
+      const sr = 1 + i * 2;
+      const er = sr + 1;
+      const sv = rows[sr] && rows[sr][colIdx];
+      const ev = rows[er] && rows[er][colIdx];
+      result[name][String(d)] = {
+        s: sv !== undefined && sv !== '' ? parseFloat(sv) : null,
+        e: ev !== undefined && ev !== '' ? parseFloat(ev) : null
+      };
+    });
+  });
+  return result;
 }
 
 // ===== LOGIN =====
 async function loadUsers() {
-  // フォールバックで即座に表示
   appNames = [
     '高城桃花','大辺陽輝','石橋李菜','清水由起子',
     '松井愛弓','大貫理恵','山邉奈々葉','Sneha',
@@ -294,12 +288,11 @@ async function loadUsers() {
     '高見京子','雨宮一美'
   ];
   buildNameSelect(appNames);
-
-  // Sheets APIでユーザシートから取得（バックグラウンド）
-  sheetsGet('ユーザ!A2:A30').then(data => {
-    const names = (data.values || []).map(r => String(r[0]).trim()).filter(n => n && n !== '管理者');
+  try {
+    const data = await sheetsGet('ユーザ!A2:A30');
+    const names = (data.values||[]).map(r=>String(r[0]).trim()).filter(n=>n&&n!=='管理者');
     if (names.length > 0) { appNames = names; buildNameSelect(appNames); }
-  }).catch(e => console.warn('ユーザ取得失敗:', e));
+  } catch(e) { console.warn('ユーザ取得失敗:', e); }
 }
 
 function buildNameSelect(names) {
@@ -308,21 +301,18 @@ function buildNameSelect(names) {
   sel.innerHTML = '<option value="">-- 選択してください --</option>';
   names.forEach(n => {
     const opt = document.createElement('option');
-    opt.value = n; opt.textContent = n;
-    sel.appendChild(opt);
+    opt.value = n; opt.textContent = n; sel.appendChild(opt);
   });
-  const adminOpt = document.createElement('option');
-  adminOpt.value = '管理者'; adminOpt.textContent = '管理者';
-  sel.appendChild(adminOpt);
+  const a = document.createElement('option');
+  a.value = '管理者'; a.textContent = '管理者'; sel.appendChild(a);
   if (prev) sel.value = prev;
   document.getElementById('login-loading').style.display = 'none';
   sel.style.display = 'block';
 }
 
 function onNameChange() {
-  const sel = document.getElementById('name-select');
-  const name = sel.value;
-  document.getElementById('pw-wrap').style.display = name === '管理者' ? 'block' : 'none';
+  const name = document.getElementById('name-select').value;
+  document.getElementById('pw-wrap').style.display = name==='管理者' ? 'block' : 'none';
   document.getElementById('login-err').style.display = 'none';
   document.getElementById('login-btn').disabled = !name;
 }
@@ -359,228 +349,101 @@ function switchTab(tab) {
     document.getElementById('tab-'+t).classList.toggle('active', t===tab);
     document.getElementById('panel-'+t).classList.toggle('active', t===tab);
   });
-  if (tab === 'confirmed') loadConfirmedShift(false);
+  if (tab === 'confirmed') loadConfirmedShift();
   if (tab === 'hope') initHopeTab();
 }
 
-// ===== 確定シフト取得 =====
-async function loadConfirmedShift(isAdmin) {
-  const bodyId = isAdmin ? 'admin-confirmed-body' : 'confirmed-body';
-  const metaId = isAdmin ? 'admin-confirmed-meta' : 'confirmed-meta';
-  document.getElementById(bodyId).innerHTML = '<div class="loading-msg">読み込み中...</div>';
+// ===== 確定シフト =====
+async function loadConfirmedShift() {
+  document.getElementById('confirmed-body').innerHTML = '<div class="loading-msg">読み込み中...</div>';
+  document.getElementById('confirmed-meta').textContent = '';
   try {
-    // メタシートで公開フラグを確認
     const metaData = await sheetsGet('メタ!A1:B2');
     const metaRows = metaData.values || [];
-    const published = metaRows[0] && metaRows[0][1] == '1';
+    const published = metaRows[0] && String(metaRows[0][1]) === '1';
     const publishedAt = metaRows[1] && metaRows[1][1] || '';
-
-    if (!isAdmin && !published) {
-      document.getElementById(bodyId).innerHTML =
+    if (!published) {
+      document.getElementById('confirmed-body').innerHTML =
         '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>管理者が公開すると表示されます</small></div>';
-      document.getElementById(metaId).textContent = '';
       return;
     }
-
-    // 確定シフトシートを読む
+    document.getElementById('confirmed-meta').textContent = '公開日時: ' + publishedAt;
     const shifts = await readSheetShifts('確定シフト');
-    const data = { published, publishedAt, names: appNames, shifts };
-    renderConfirmedTable(data, isAdmin);
+    renderConfirmedTable(shifts);
   } catch(e) {
-    console.error('loadConfirmedShift error:', e);
-    if (isAdmin) {
-      renderConfirmedTable({ published: false, names: appNames, shifts: {} }, isAdmin);
-    } else {
-      document.getElementById(bodyId).innerHTML =
-        '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>管理者が公開すると表示されます</small></div>';
-    }
-  }
-}
-
-// スプシのシフトシートを読んで {名前: {d: {s,e}}} 形式に変換
-async function readSheetShifts(sheetName) {
-  const totalRows = 1 + DATES.length * 2; // ヘッダー1行 + 日付15日×2行
-  const data = await sheetsGet(sheetName + '!A1:Z' + totalRows);
-  const rows = data.values || [];
-  if (!rows.length) return {};
-
-  // 1行目ヘッダーから従業員名と列インデックスを取得
-  const header = rows[0];
-  const result = {};
-  appNames.forEach(name => {
-    const colIdx = header.indexOf(name);
-    if (colIdx === -1) return;
-    result[name] = {};
-    DATES.forEach(({ d }, i) => {
-      const startRow = 1 + i * 2;  // 0-indexed
-      const endRow = startRow + 1;
-      const sv = rows[startRow] && rows[startRow][colIdx];
-      const ev = rows[endRow]   && rows[endRow][colIdx];
-      result[name][String(d)] = {
-        s: sv !== undefined && sv !== '' ? parseFloat(sv) : null,
-        e: ev !== undefined && ev !== '' ? parseFloat(ev) : null
-      };
-    });
-  });
-  return result;
-}
-
-function renderConfirmedTable(data, isAdmin) {
-  const bodyId = isAdmin ? 'admin-confirmed-body' : 'confirmed-body';
-  const metaId = isAdmin ? 'admin-confirmed-meta' : 'confirmed-meta';
-
-  if (!isAdmin && (!data || !data.published)) {
-    document.getElementById(bodyId).innerHTML =
+    console.error(e);
+    document.getElementById('confirmed-body').innerHTML =
       '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>管理者が公開すると表示されます</small></div>';
-    document.getElementById(metaId).textContent = '';
-    return;
   }
+}
 
-  const names = (data && data.names) ? data.names : appNames;
-  const shifts = (data && data.shifts) ? data.shifts : {};
-  const metaEl = document.getElementById(metaId);
-  if (metaEl) metaEl.textContent = data && data.publishedAt ? '公開日時: ' + data.publishedAt : '';
-
-  const shortNames = names.map(n => {
+function renderConfirmedTable(shifts) {
+  const shortNames = appNames.map(n => {
     const p = n.trim().split(/\s+/);
     return p[0].length <= 4 ? p[0] : p[0].slice(0,4);
   });
-
   let thead = '<tr><th class="th-date">日付</th>';
   shortNames.forEach(n => { thead += `<th>${n}</th>`; });
   thead += '</tr>';
-
   let tbody = '';
   DATES.forEach(({ d, dow, sat, sun }) => {
     const trClass = sat ? 'sat' : sun ? 'sun' : '';
     let row = `<tr class="${trClass}"><td class="td-date">4/${d}(${dow})</td>`;
-    names.forEach((name, ni) => {
+    appNames.forEach(name => {
       const s = shifts[name] && shifts[name][String(d)];
-      const sv = s && s.s !== null ? parseFloat(s.s) : null;
-      const ev = s && s.e !== null ? parseFloat(s.e) : null;
-      if (isAdmin) {
-        row += `<td class="editable">
-          <input type="text" data-name="${name}" data-d="${d}" data-key="s"
-            value="${sv!==null ? valToTime(sv) : ''}" placeholder="—"
-            class="${sv===null?'empty-val':''}">
-          <br>
-          <input type="text" data-name="${name}" data-d="${d}" data-key="e"
-            value="${ev!==null ? valToTime(ev) : ''}" placeholder="—"
-            class="${ev===null?'empty-val':''}">
-        </td>`;
-      } else {
-        row += sv!==null && ev!==null
-          ? `<td class="has-val">${valToTime(sv)}<br>${valToTime(ev)}</td>`
-          : `<td class="no-val">—</td>`;
-      }
+      const sv = s && s.s !== null ? s.s : null;
+      const ev = s && s.e !== null ? s.e : null;
+      row += sv!==null && ev!==null
+        ? `<td class="has-val">${valToTime(sv)}<br>${valToTime(ev)}</td>`
+        : `<td class="no-val">—</td>`;
     });
     row += '</tr>';
     tbody += row;
   });
-
-  document.getElementById(bodyId).innerHTML =
+  document.getElementById('confirmed-body').innerHTML =
     `<div class="table-scroll"><table class="cs-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
-
-  if (isAdmin) {
-    document.querySelectorAll('#admin-confirmed-body .editable input').forEach(input => {
-      input.addEventListener('input', () => input.classList.toggle('empty-val', !input.value));
-    });
-  }
 }
 
-// ===== 希望シフト一覧取得（管理者）=====
-async function loadHopeShifts() {
-  document.getElementById('admin-hope-body').innerHTML = '<div class="loading-msg">読み込み中...</div>';
+// ===== 希望シフト =====
+async function initHopeTab() {
+  shiftState = {};
+  DATES.forEach(({d}) => { shiftState[d] = {s:null, e:null}; });
+
+  // スプシから自分の希望シフトを取得
   try {
     const shifts = await readSheetShifts('希望シフト');
-    renderHopeList({ names: appNames, shifts });
-  } catch(e) {
-    console.error('loadHopeShifts error:', e);
-    document.getElementById('admin-hope-body').innerHTML = '<div class="loading-msg">取得できませんでした。</div>';
-  }
-}
-
-function renderHopeList(data) {
-  const names = (data && data.names) ? data.names : appNames;
-  const shifts = (data && data.shifts) ? data.shifts : {};
-  const wrap = document.getElementById('admin-hope-body');
-  wrap.innerHTML = '';
-  names.forEach(name => {
-    const personShifts = shifts[name] || {};
-    const count = DATES.filter(({d}) => {
-      const s = personShifts[String(d)];
-      return s && (s.s !== null || s.e !== null);
-    }).length;
-    const card = document.createElement('div');
-    card.className = 'admin-person-card';
-    let rows = '';
-    DATES.forEach(({d, dow}) => {
-      const s = personShifts[String(d)];
-      const hasShift = s && (s.s !== null || s.e !== null);
-      const timeStr = hasShift
-        ? `${s.s!==null?valToTime(s.s):'?'} 〜 ${s.e!==null?valToTime(s.e):'?'}`
-        : '休み';
-      rows += `<tr><td class="td-date">${d}(${dow})</td>
-        <td class="${hasShift?'td-time':'td-off'}">${timeStr}</td></tr>`;
-    });
-    card.innerHTML = `
-      <div class="admin-person-header" onclick="toggleAdmin(this)">
-        <div>
-          <div class="admin-person-name">${name}</div>
-          <div class="admin-person-meta">${count > 0 ? `提出済 ${count}日入力` : '未提出'}</div>
-        </div>
-        <div class="admin-chevron">▼</div>
-      </div>
-      <div class="admin-person-body">
-        <table class="admin-shift-table">${rows}</table>
-      </div>`;
-    wrap.appendChild(card);
-  });
-}
-
-function toggleAdmin(header) {
-  header.nextElementSibling.classList.toggle('open');
-  header.querySelector('.admin-chevron').classList.toggle('open');
-}
-
-// ===== 公開ボタン =====
-async function doPublish() {
-  const inputs = document.querySelectorAll('#admin-confirmed-body .editable input');
-  if (!inputs.length) {
-    showToast('先に確定シフトを読み込んでください'); return;
-  }
-
-  // 編集内容をApps Scriptに送信（名前ごとに分割して送信）
-  const editedShifts = {};
-  inputs.forEach(input => {
-    const name = input.dataset.name;
-    const d    = input.dataset.d;
-    const key  = input.dataset.key;
-    if (!editedShifts[name]) editedShifts[name] = {};
-    if (!editedShifts[name][d]) editedShifts[name][d] = { s: null, e: null };
-    editedShifts[name][d][key] = timeToVal(input.value);
-  });
-
-  const btn = document.getElementById('publish-btn');
-  btn.disabled = true; btn.textContent = '保存・公開中...';
-
-  try {
-    // 1人ずつ分割して送信（URLサイズ上限対策）
-    for (const name of appNames) {
-      if (!editedShifts[name]) continue;
-      const singlePayload = { name, shifts: editedShifts[name] };
-      await fireAndForget('action=updateConfirmedOne&payload=' + encodeURIComponent(JSON.stringify(singlePayload)));
+    if (shifts[currentUser]) {
+      DATES.forEach(({d}) => {
+        const s = shifts[currentUser][String(d)];
+        if (s) shiftState[d] = s;
+      });
     }
-    // 全員送信後に公開フラグON
-    await fireAndForget('action=publish');
-    const ts = new Date().toLocaleString('ja-JP');
-    localStorage.setItem('lastPublished', ts);
-    document.getElementById('last-published').textContent = '最終公開: ' + ts;
-    showToast('確定シフトを公開しました');
   } catch(e) {
-    showToast('公開に失敗しました');
+    // 取得失敗時はlocalStorageのフォールバック
+    const saved = loadSaved(currentUser);
+    if (saved) Object.assign(shiftState, saved.shifts);
   }
-  btn.disabled = false; btn.textContent = '公開する';
+
+  const saved = loadSaved(currentUser);
+  document.getElementById('global-comment').value = saved && saved.comment || '';
+  buildShiftList();
+  updateStatus();
+}
+
+// ===== 希望シフト提出 =====
+async function doSubmit() {
+  const payload = {
+    name: currentUser,
+    shifts: JSON.parse(JSON.stringify(shiftState)),
+    comment: document.getElementById('global-comment').value,
+    submittedAt: new Date().toISOString()
+  };
+  saveLocal(currentUser, payload);
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = '送信中...';
+  await gasCall('data=' + encodeURIComponent(JSON.stringify(payload)));
+  btn.disabled = false; btn.textContent = '提出する';
+  showToast('提出しました');
 }
 
 // ===== ADMIN =====
@@ -589,46 +452,73 @@ function showAdmin() {
   document.getElementById('admin-screen').style.display = 'block';
   const ts = localStorage.getItem('lastPublished');
   if (ts) document.getElementById('last-published').textContent = '最終公開: ' + ts;
-  switchAdminTab('confirmed');
+  buildPersonList();
 }
 
-function switchAdminTab(tab) {
-  ['confirmed','hope'].forEach(t => {
-    document.getElementById('atab-'+t).classList.toggle('active', t===tab);
-    document.getElementById('apanel-'+t).classList.toggle('active', t===tab);
-  });
-  if (tab === 'confirmed') loadConfirmedShift(true);
-  if (tab === 'hope') loadHopeShifts();
-}
-
-// ===== 希望シフト入力 =====
-function initHopeTab() {
-  shiftState = {};
-  DATES.forEach(({d}) => { shiftState[d] = {s:null, e:null}; });
-  const saved = loadSaved(currentUser);
-  if (saved) {
-    Object.assign(shiftState, saved.shifts);
-    document.getElementById('global-comment').value = saved.comment || '';
+async function buildPersonList() {
+  const wrap = document.getElementById('person-list');
+  wrap.innerHTML = '<div class="loading-msg" style="padding:12px 0;">読み込み中...</div>';
+  // 提出済み判定：希望シフトに1件でも値があるか
+  let submitted = {};
+  try {
+    const shifts = await readSheetShifts('希望シフト');
+    appNames.forEach(name => {
+      submitted[name] = DATES.some(({d}) => {
+        const s = shifts[name] && shifts[name][String(d)];
+        return s && (s.s !== null || s.e !== null);
+      });
+    });
+  } catch(e) {
+    appNames.forEach(n => { submitted[n] = false; });
   }
-  buildShiftList();
-  updateStatus();
+
+  wrap.innerHTML = '';
+  appNames.forEach(name => {
+    const isDone = submitted[name];
+    const row = document.createElement('div');
+    row.className = 'person-row';
+    row.innerHTML = `
+      <div>
+        <span class="person-name">${name}</span>
+        <span class="badge ${isDone?'badge-done':'badge-none'}">${isDone?'提出済':'未提出'}</span>
+      </div>
+      <button class="btn-sm" ${isDone?'':'disabled'} onclick="doCopyOne('${name}', this)">コピー</button>
+    `;
+    wrap.appendChild(row);
+  });
 }
 
+async function doCopyAll() {
+  const btn = document.getElementById('copy-all-btn');
+  btn.disabled = true; btn.textContent = '実行中...';
+  await gasCall('action=copyAll');
+  btn.disabled = false; btn.textContent = '全員コピー実行';
+  showToast('全員の希望シフトをコピーしました');
+}
+
+async function doCopyOne(name, btn) {
+  btn.disabled = true; btn.textContent = '処理中...';
+  await gasCall('action=copyOne&name=' + encodeURIComponent(name));
+  btn.disabled = false; btn.textContent = 'コピー';
+  showToast(name + ' をコピーしました');
+}
+
+async function doPublish() {
+  const btn = document.getElementById('publish-btn');
+  btn.disabled = true; btn.textContent = '公開中...';
+  await gasCall('action=publish');
+  btn.disabled = false; btn.textContent = '公開する';
+  const ts = new Date().toLocaleString('ja-JP');
+  localStorage.setItem('lastPublished', ts);
+  document.getElementById('last-published').textContent = '最終公開: ' + ts;
+  showToast('確定シフトを公開しました');
+}
+
+// ===== ユーティリティ =====
 function valToTime(v) {
   if (v===null||v===undefined||v==='') return '';
-  v = parseFloat(v);
-  if (isNaN(v)) return '';
+  v = parseFloat(v); if (isNaN(v)) return '';
   return Math.floor(v) + ':' + (v%1>=0.4999?'30':'00');
-}
-function timeToVal(str) {
-  if (!str||str.trim()===''||str.trim()==='—') return null;
-  str = str.trim();
-  if (str.includes(':')) {
-    const [h,m] = str.split(':').map(Number);
-    return h + (m>=30?0.5:0);
-  }
-  const v = parseFloat(str);
-  return isNaN(v) ? null : v;
 }
 function toDisp(v) {
   if (v===null) return '—';
@@ -673,15 +563,15 @@ function getTimeLabel(d) {
   return (s!==null?toTime(s):'?')+'〜'+(e!==null?toTime(e):'?');
 }
 function spin(d,key,dir) {
-  let cur = shiftState[d][key];
-  if (cur===null) { cur = key==='s'?MIN_VAL:MAX_VAL; }
+  let cur=shiftState[d][key];
+  if (cur===null){cur=key==='s'?MIN_VAL:MAX_VAL;}
   else {
-    cur = Math.round((cur+dir*0.5)*100)/100;
-    if (cur<MIN_VAL) { shiftState[d][key]=null; updateSpinUI(d,key); updateRowStyle(d); updateStatus(); return; }
+    cur=Math.round((cur+dir*0.5)*100)/100;
+    if (cur<MIN_VAL){shiftState[d][key]=null;updateSpinUI(d,key);updateRowStyle(d);updateStatus();return;}
     if (cur>MAX_VAL) cur=MAX_VAL;
   }
   shiftState[d][key]=cur;
-  updateSpinUI(d,key); updateRowStyle(d); updateStatus();
+  updateSpinUI(d,key);updateRowStyle(d);updateStatus();
 }
 function updateSpinUI(d,key) {
   const v=shiftState[d][key];
@@ -698,39 +588,21 @@ function updateRowStyle(d) {
   row.className='day-row'+(dt.sat?' sat':dt.sun?' sun':(shiftState[d].s!==null||shiftState[d].e!==null?' has-shift':''));
 }
 function clearDay(d) {
-  shiftState[d].s=null; shiftState[d].e=null;
-  updateSpinUI(d,'s'); updateSpinUI(d,'e');
-  updateRowStyle(d); updateStatus();
+  shiftState[d].s=null;shiftState[d].e=null;
+  updateSpinUI(d,'s');updateSpinUI(d,'e');
+  updateRowStyle(d);updateStatus();
 }
 function updateStatus() {
   const count=DATES.filter(({d})=>shiftState[d].s!==null||shiftState[d].e!==null).length;
   document.getElementById('status-bar').innerHTML=`入力済み <span>${count}</span> / ${DATES.length} 日`;
 }
-async function doSubmit() {
-  const payload = {
-    name: currentUser,
-    shifts: JSON.parse(JSON.stringify(shiftState)),
-    comment: document.getElementById('global-comment').value,
-    submittedAt: new Date().toISOString()
-  };
-  saveLocal(currentUser, payload);
-  const btn = document.querySelector('#panel-hope .btn-primary');
-  btn.disabled = true; btn.textContent = '送信中...';
-  // 書き込みはno-cors fetchで送信（レスポンス確認不要）
-  await fireAndForget('data=' + encodeURIComponent(JSON.stringify(payload)));
-  btn.disabled = false; btn.textContent = '提出する';
-  showToast('提出しました');
-}
 
-// ===== STORAGE =====
 function saveLocal(name,data){try{localStorage.setItem('shift_'+name,JSON.stringify(data));}catch(e){}}
 function loadSaved(name){try{return JSON.parse(localStorage.getItem('shift_'+name));}catch(e){return null;}}
 
-// ===== LOGOUT =====
 function doLogout() {
   currentUser=null;
-  document.getElementById('app-screen').style.display='none';
-  document.getElementById('admin-screen').style.display='none';
+  ['app-screen','admin-screen'].forEach(id=>document.getElementById(id).style.display='none');
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('name-select').value='';
   document.getElementById('pw-wrap').style.display='none';
@@ -739,7 +611,6 @@ function doLogout() {
   document.getElementById('login-btn').disabled=true;
 }
 
-// ===== TOAST =====
 function showToast(msg) {
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
