@@ -408,24 +408,20 @@ function renderConfirmedTable(shifts) {
 async function initHopeTab() {
   shiftState = {};
   DATES.forEach(({d}) => { shiftState[d] = {s:null, e:null}; });
+  document.getElementById('global-comment').value = '';
 
-  // スプシから自分の希望シフトを取得
   try {
     const shifts = await readSheetShifts('希望シフト');
     if (shifts[currentUser]) {
       DATES.forEach(({d}) => {
         const s = shifts[currentUser][String(d)];
-        if (s) shiftState[d] = s;
+        if (s) shiftState[d] = { s: s.s, e: s.e };
       });
     }
   } catch(e) {
-    // 取得失敗時はlocalStorageのフォールバック
-    const saved = loadSaved(currentUser);
-    if (saved) Object.assign(shiftState, saved.shifts);
+    console.warn('希望シフト取得失敗:', e);
   }
 
-  const saved = loadSaved(currentUser);
-  document.getElementById('global-comment').value = saved && saved.comment || '';
   buildShiftList();
   updateStatus();
 }
@@ -438,7 +434,6 @@ async function doSubmit() {
     comment: document.getElementById('global-comment').value,
     submittedAt: new Date().toISOString()
   };
-  saveLocal(currentUser, payload);
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = '送信中...';
   await gasCall('data=' + encodeURIComponent(JSON.stringify(payload)));
