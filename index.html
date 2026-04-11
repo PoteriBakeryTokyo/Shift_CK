@@ -350,7 +350,7 @@ function switchTab(tab) {
     document.getElementById('panel-'+t).classList.toggle('active', t===tab);
   });
   if (tab === 'confirmed') loadConfirmedShift();
-  if (tab === 'hope') initHopeTab();
+  if (tab === 'hope') { resetSubmitBtn(); initHopeTab(); }
 }
 
 // ===== 確定シフト =====
@@ -436,9 +436,50 @@ async function doSubmit() {
   };
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = '送信中...';
+  btn.style.background = '';
+
+  // 送信
   await gasCall('data=' + encodeURIComponent(JSON.stringify(payload)));
-  btn.disabled = false; btn.textContent = '提出する';
-  showToast('提出しました');
+
+  // 3秒待ってからスプシ再読み込みして照合
+  btn.textContent = '確認中...';
+  await new Promise(r => setTimeout(r, 3000));
+
+  try {
+    const latest = await readSheetShifts('希望シフト');
+    const latestUser = latest[currentUser] || {};
+    let matched = true;
+    DATES.forEach(({ d }) => {
+      const sent = payload.shifts[d] || { s: null, e: null };
+      const got  = latestUser[String(d)] || { s: null, e: null };
+      if (sent.s !== got.s || sent.e !== got.e) matched = false;
+    });
+
+    if (matched) {
+      btn.disabled = false;
+      btn.textContent = '提出済み ✓';
+      btn.style.background = '#1D9E75';
+    } else {
+      btn.disabled = false;
+      btn.textContent = '提出';
+      btn.style.background = '';
+      showToast('エラー。再度「提出」を押してください');
+    }
+  } catch(e) {
+    // 再読み込み失敗時は判定できないので提出ボタンに戻す
+    btn.disabled = false;
+    btn.textContent = '提出';
+    btn.style.background = '';
+    showToast('確認できませんでした。再度「提出」を押してください');
+  }
+}
+
+function resetSubmitBtn() {
+  const btn = document.getElementById('submit-btn');
+  if (!btn) return;
+  btn.textContent = '提出';
+  btn.style.background = '';
+  btn.disabled = false;
 }
 
 // ===== ADMIN =====
@@ -562,11 +603,11 @@ function spin(d,key,dir) {
   if (cur===null){cur=key==='s'?MIN_VAL:MAX_VAL;}
   else {
     cur=Math.round((cur+dir*0.5)*100)/100;
-    if (cur<MIN_VAL){shiftState[d][key]=null;updateSpinUI(d,key);updateRowStyle(d);updateStatus();return;}
+    if (cur<MIN_VAL){shiftState[d][key]=null;updateSpinUI(d,key);updateRowStyle(d);updateStatus();resetSubmitBtn();return;}
     if (cur>MAX_VAL) cur=MAX_VAL;
   }
   shiftState[d][key]=cur;
-  updateSpinUI(d,key);updateRowStyle(d);updateStatus();
+  updateSpinUI(d,key);updateRowStyle(d);updateStatus();resetSubmitBtn();
 }
 function updateSpinUI(d,key) {
   const v=shiftState[d][key];
@@ -585,7 +626,7 @@ function updateRowStyle(d) {
 function clearDay(d) {
   shiftState[d].s=null;shiftState[d].e=null;
   updateSpinUI(d,'s');updateSpinUI(d,'e');
-  updateRowStyle(d);updateStatus();
+  updateRowStyle(d);updateStatus();resetSubmitBtn();
 }
 function updateStatus() {
   const count=DATES.filter(({d})=>shiftState[d].s!==null||shiftState[d].e!==null).length;
