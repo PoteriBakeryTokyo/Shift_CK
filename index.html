@@ -432,6 +432,10 @@ async function initHopeTab() {
         const s = shifts[currentUser].shifts[String(d)];
         if (s) shiftState[d] = { s: s.s, e: s.e };
       });
+      // コメントも反映
+      if (shifts[currentUser].comment) {
+        document.getElementById('global-comment').value = shifts[currentUser].comment;
+      }
     }
   } catch(e) {
     console.warn('希望シフト取得失敗:', e);
