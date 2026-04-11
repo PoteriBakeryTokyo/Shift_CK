@@ -258,12 +258,19 @@ async function gasCall(params, timeout=25000) {
 
 // ===== スプシからシフトデータを読む =====
 async function readSheetShifts(sheetName) {
-  const totalRows = 2 + DATES.length * 2; // ヘッダー+シフト+コメント行
-  const data = await sheetsGet(sheetName + '!A1:Z' + totalRows);
+  const commentRowNum = 2 + DATES.length * 2; // = 32
+  const data = await sheetsGet(sheetName + '!A1:Z' + commentRowNum);
   const rows = data.values || [];
   if (!rows.length) return {};
   const header = rows[0];
-  const commentRowIdx = 1 + DATES.length * 2; // 0-indexed → 32行目
+
+  // コメント行を別途取得（空行スキップ問題を回避）
+  let commentRow = [];
+  try {
+    const cd = await sheetsGet(sheetName + '!A' + commentRowNum + ':Z' + commentRowNum);
+    commentRow = (cd.values && cd.values[0]) || [];
+  } catch(e) {}
+
   const result = {};
   appNames.forEach(name => {
     const colIdx = header.indexOf(name);
@@ -279,9 +286,7 @@ async function readSheetShifts(sheetName) {
         e: ev !== undefined && ev !== '' ? parseFloat(ev) : null
       };
     });
-    // コメント行
-    const commentRow = rows[commentRowIdx];
-    result[name].comment = commentRow && commentRow[colIdx] ? String(commentRow[colIdx]) : '';
+    result[name].comment = commentRow[colIdx] ? String(commentRow[colIdx]) : '';
   });
   return result;
 }
