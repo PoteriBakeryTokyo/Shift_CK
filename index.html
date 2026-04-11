@@ -230,7 +230,7 @@ const MIN_VAL = 6.5, MAX_VAL = 16.0;
 const DOW_JP = ['日','月','火','水','木','金','土'];
 const DATES = [];
 for (let d = 16; d <= 30; d++) {
-  const dt = new Date(2025, 3, d);
+  const dt = new Date(2026, 3, d);
   DATES.push({ d, dow: DOW_JP[dt.getDay()], sat: dt.getDay()===6, sun: dt.getDay()===0 });
 }
 
