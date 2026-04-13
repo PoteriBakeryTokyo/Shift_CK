@@ -61,6 +61,8 @@
   .cs-table th.th-date{text-align:left;min-width:72px;position:sticky;left:0;z-index:2;background:#1A1814;}
   .cs-table td{padding:5px 6px;text-align:center;border-bottom:.5px solid var(--border);white-space:nowrap;font-family:var(--mono);font-size:11px;}
   .cs-table td.td-date{text-align:left;font-family:var(--sans);font-weight:500;font-size:12px;position:sticky;left:0;background:var(--surface);z-index:1;padding:5px 8px;}
+  .cs-table th.th-biko{min-width:80px;}
+  .cs-table td.td-biko{text-align:left;font-family:var(--sans);font-size:11px;color:var(--text2);padding:5px 8px;white-space:normal;max-width:120px;}
   .cs-table tr.sat td{background:var(--sat-bg);}
   .cs-table tr.sat td.td-date{background:var(--sat-bg);color:var(--sat);}
   .cs-table tr.sun td{background:var(--sun-bg);}
@@ -386,8 +388,24 @@ async function loadConfirmedShift() {
       return;
     }
     document.getElementById('confirmed-meta').textContent = '公開日時: ' + publishedAt;
-    const shifts = await readSheetShifts('確定シフト');
-    renderConfirmedTable(shifts);
+
+    // シフトデータと備考列を並行取得
+    const totalRows = 1 + DATES.length * 2;
+    const [shiftsResult,備考Data] = await Promise.all([
+      readSheetShifts('確定シフト'),
+      sheetsGet('確定シフト!B1:B' + totalRows)
+    ]);
+
+    // 備考列を行インデックスで管理（1行目はヘッダーなのでスキップ）
+    const 備考Rows = 備考Data.values || [];
+    const 備考Map = {};
+    DATES.forEach(({ d }, i) => {
+      const r = 1 + i * 2; // 0-indexed、1行目ヘッダースキップ
+      const val = 備考Rows[r] && 備考Rows[r][0];
+      備考Map[String(d)] = val ? String(val) : '';
+    });
+
+    renderConfirmedTable(shiftsResult, 備考Map);
   } catch(e) {
     console.error(e);
     document.getElementById('confirmed-body').innerHTML =
@@ -395,14 +413,16 @@ async function loadConfirmedShift() {
   }
 }
 
-function renderConfirmedTable(shifts) {
-  let thead = '<tr><th class="th-date">日付</th>';
+function renderConfirmedTable(shifts, 備考Map) {
+  備考Map = 備考Map || {};
+  let thead = '<tr><th class="th-date">日付</th><th class="th-biko">備考</th>';
   appNames.forEach(n => { thead += `<th>${n}</th>`; });
   thead += '</tr>';
   let tbody = '';
   DATES.forEach(({ d, dow, sat, sun }) => {
     const trClass = sat ? 'sat' : sun ? 'sun' : '';
-    let row = `<tr class="${trClass}"><td class="td-date">4/${d}(${dow})</td>`;
+    const biko = 備考Map[String(d)] || '';
+    let row = `<tr class="${trClass}"><td class="td-date">4/${d}(${dow})</td><td class="td-biko">${biko}</td>`;
     appNames.forEach(name => {
       const sd = shifts[name] && shifts[name].shifts;
       const s = sd && sd[String(d)];
