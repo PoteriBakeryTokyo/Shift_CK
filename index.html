@@ -195,11 +195,14 @@
       <button class="btn-accent" id="reflect-btn" onclick="doReflectPeriod()">期間を反映</button>
     </div>
     <div class="publish-card">
-      <div class="publish-info">
-        <p>確定シフトを公開</p>
-        <small id="last-published">最終公開: 未公開</small>
+      <div style="flex:1;">
+        <p style="font-family:var(--display);font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">確定シフトを公開</p>
+        <select id="publish-period-select" style="width:100%;padding:8px 14px;border:1px solid var(--border);border-radius:980px;font-family:var(--sans);font-size:14px;background:var(--surface2);color:var(--text);outline:none;margin-bottom:10px;appearance:none;"></select>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <small id="last-published" style="font-size:12px;color:var(--text3);font-family:var(--mono);">最終公開: 未公開</small>
+          <button class="btn-accent" id="publish-btn" onclick="doPublish()">公開する</button>
+        </div>
       </div>
-      <button class="btn-accent" id="publish-btn" onclick="doPublish()">公開する</button>
     </div>
   </div>
 </div>
@@ -371,39 +374,48 @@ async function loadConfirmedShift() {
   document.getElementById('confirmed-body').innerHTML = '<div class="loading-msg">読み込み中...</div>';
   document.getElementById('confirmed-meta').textContent = '';
   try {
-    const metaData = await sheetsGet('メタ!A1:B4');
+    const metaData = await sheetsGet('メタ!A1:B5');
     const metaRows = metaData.values || [];
-    const published   = metaRows[0] && String(metaRows[0][1]) === '1';
-    const publishedAt = metaRows[1] && metaRows[1][1] || '';
+    const published        = metaRows[0] && String(metaRows[0][1]) === '1';
+    const publishedAt      = metaRows[1] && metaRows[1][1] || '';
+    const publishedPeriods = metaRows[4] && String(metaRows[4][1]) || '';
 
-    if (!published) {
+    if (!published || !publishedPeriods) {
       document.getElementById('confirmed-body').innerHTML =
         '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>The final shift has not been published yet.</small></div>';
       return;
     }
+
+    // 公開済み期間をパース: "YYYY-MM-DD/YYYY-MM-DD,..." → Set of dates
+    const publishedDates = new Set();
+    publishedPeriods.split(',').forEach(p => {
+      const [s, e] = p.trim().split('/');
+      if (!s || !e) return;
+      const end = new Date(e);
+      for (let dt = new Date(s); dt <= end; dt.setDate(dt.getDate()+1)) {
+        publishedDates.add(dt.toISOString().slice(0,10));
+      }
+    });
+
     document.getElementById('confirmed-meta').textContent = '公開日時: ' + publishedAt;
 
-    // 表示範囲：当日が属する半月 + 次の半月
     const today = new Date();
     const dispDates = getConfirmedDisplayDates(today);
-
-    // スプシから確定シフトを取得（ヘッダーで列を特定）
     const headerData = await sheetsGet('確定シフト!A1:Z1');
     const header = (headerData.values && headerData.values[0]) || [];
     if (!header.length) {
       document.getElementById('confirmed-body').innerHTML = '<div class="loading-msg">データがありません</div>';
       return;
     }
-
-    // 必要な行だけ取得するため全データを取得してフィルタ
     const totalRows = await getConfirmedRows(header, dispDates);
-    renderConfirmedTable(header, totalRows, dispDates);
+    renderConfirmedTable(header, totalRows, dispDates, publishedDates);
   } catch(e) {
     console.error(e);
     document.getElementById('confirmed-body').innerHTML =
       '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>The final shift has not been published yet.</small></div>';
   }
 }
+
 
 function getConfirmedDisplayDates(today) {
   // 当日が属する半月
@@ -454,10 +466,10 @@ async function getConfirmedRows(header, dispDates) {
   return result;
 }
 
-function renderConfirmedTable(header, rowsMap, dispDates) {
-  const shortNames = appNames.map(n => n);
+function renderConfirmedTable(header, rowsMap, dispDates, publishedDates) {
+  publishedDates = publishedDates || new Set();
   let thead = '<tr><th class="th-date">日付</th><th class="th-biko">備考</th>';
-  shortNames.forEach(n => { thead += `<th>${n}</th>`; });
+  appNames.forEach(n => { thead += `<th>${n}</th>`; });
   thead += '</tr>';
 
   const bikoIdx = header.indexOf('備考');
@@ -466,9 +478,18 @@ function renderConfirmedTable(header, rowsMap, dispDates) {
   dispDates.forEach(({ y, m, d, dow, sat, sun, key }) => {
     const trClass = sat?'sat':sun?'sun':'';
     const rowData = rowsMap[key];
-    const biko = (bikoIdx >= 0 && rowData && rowData.startRow && rowData.startRow[bikoIdx]) ? String(rowData.startRow[bikoIdx]) : '';
+    const biko = (bikoIdx >= 0 && rowData && rowData.startRow && rowData.startRow[bikoIdx])
+      ? String(rowData.startRow[bikoIdx]) : '';
+    // 公開済み判定
+    const dateKey = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isPublished = publishedDates.has(dateKey);
+
     let row = `<tr class="${trClass}"><td class="td-date">${m}/${d}(${dow})</td><td class="td-biko">${biko}</td>`;
     appNames.forEach(name => {
+      if (!isPublished) {
+        row += `<td class="no-val" style="color:#adadb0;font-size:10px;">未公開</td>`;
+        return;
+      }
       const colIdx = header.indexOf(name);
       if (colIdx < 0) { row += '<td class="no-val">—</td>'; return; }
       const sv = rowData && rowData.startRow && rowData.startRow[colIdx];
@@ -483,7 +504,6 @@ function renderConfirmedTable(header, rowsMap, dispDates) {
     tbody += row;
   });
 
-  // 期間バッジ
   if (dispDates.length > 0) {
     const s = dispDates[0], e = dispDates[dispDates.length-1];
     document.getElementById('confirmed-meta').textContent =
@@ -685,10 +705,12 @@ async function loadAdminMeta() {
 }
 
 function buildPeriodSelect() {
-  const sel = document.getElementById('period-select');
-  sel.innerHTML = '';
   const today = new Date();
   const options = generatePeriodOptions(today);
+
+  // 希望シフト対象期間プルダウン
+  const sel = document.getElementById('period-select');
+  sel.innerHTML = '';
   options.forEach(({ startStr, endStr, label }) => {
     const opt = document.createElement('option');
     opt.value = startStr + '/' + endStr;
@@ -696,6 +718,18 @@ function buildPeriodSelect() {
     opt.dataset.start = startStr;
     opt.dataset.end   = endStr;
     sel.appendChild(opt);
+  });
+
+  // 公開する期間プルダウン（同じ選択肢）
+  const psel = document.getElementById('publish-period-select');
+  psel.innerHTML = '';
+  options.forEach(({ startStr, endStr, label }) => {
+    const opt = document.createElement('option');
+    opt.value = startStr + '/' + endStr;
+    opt.textContent = label;
+    opt.dataset.start = startStr;
+    opt.dataset.end   = endStr;
+    psel.appendChild(opt);
   });
 }
 
@@ -714,13 +748,18 @@ async function doReflectPeriod() {
 }
 
 async function doPublish() {
+  const psel = document.getElementById('publish-period-select');
+  const opt = psel && psel.options[psel.selectedIndex];
+  if (!opt) { showToast('公開する期間を選択してください'); return; }
+  const periodStr = opt.value; // "YYYY-MM-DD/YYYY-MM-DD"
+
   const btn = document.getElementById('publish-btn');
   btn.disabled = true; btn.textContent = '公開中...';
-  await gasCall('action=publish');
+  await gasCall('action=publish&period=' + encodeURIComponent(periodStr));
   await new Promise(r => setTimeout(r, 2000));
   btn.disabled = false; btn.textContent = '公開する';
   const ts = new Date().toLocaleString('ja-JP');
-  document.getElementById('last-published').textContent = '最終公開: ' + ts;
+  document.getElementById('last-published').textContent = '最終公開: ' + ts + ' (' + opt.textContent + ')';
   showToast('確定シフトを公開しました');
 }
 
