@@ -10,128 +10,118 @@
     --bg:#fff; --surface:#fff; --surface2:#f5f5f7;
     --border:#d2d2d7; --border2:#b8b8bc;
     --text:#1d1d1f; --text2:#6e6e73; --text3:#adadb0;
-    --accent:#0071e3; --accent-light:#e8f0fb;
+    --blue:#0071e3; --blue-h:#0077ed;
     --sat:#1A4A7A; --sat-bg:#EBF1F8;
     --sun:#7A1A1A; --sun-bg:#F8EBEB;
-    --danger:#ff3b30;
-    --mono:'SF Mono','Courier New',monospace;
+    --danger:#ff3b30; --green:#34c759;
     --sans:"SF Pro JP","SF Pro Text","SF Pro Icons","Hiragino Kaku Gothic Pro","ヒラギノ角ゴ Pro W3",メイリオ,Meiryo,"ＭＳ Ｐゴシック","Helvetica Neue",Helvetica,Arial,sans-serif;
     --display:"SF Pro JP","SF Pro Display","SF Pro Icons","Hiragino Kaku Gothic Pro","ヒラギノ角ゴ Pro W3",メイリオ,Meiryo,"ＭＳ Ｐゴシック","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --mono:"SF Mono","Courier New",monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:17px;line-height:1.47;letter-spacing:-0.357px;-webkit-font-smoothing:antialiased;}
 
   /* LOGIN */
-  #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
-  .login-card{background:var(--surface);border:none;border-radius:18px;padding:48px 36px;width:100%;max-width:380px;box-shadow:0 4px 40px rgba(0,0,0,0.08);}
+  #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--surface2);}
+  .login-card{background:var(--surface);border-radius:18px;padding:48px 36px;width:100%;max-width:380px;box-shadow:0 4px 40px rgba(0,0,0,0.08);}
   .login-logo{font-family:var(--display);font-size:12px;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin-bottom:32px;text-align:center;}
-  .login-title{font-family:var(--display);font-size:28px;font-weight:600;line-height:1.14;letter-spacing:0.196px;margin-bottom:6px;text-align:center;}
-  .login-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:28px;}
-  .login-label{font-size:11px;font-weight:500;letter-spacing:.05em;color:var(--text2);margin-bottom:8px;}
-  .name-select{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:980px;font-family:var(--sans);font-size:17px;background:var(--surface2);color:var(--text);outline:none;margin-bottom:16px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e6e73' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
-  .name-select:focus{border-color:var(--accent);}
-  .pw-wrap{margin-bottom:16px;display:none;}
-  .pw-wrap input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:14px;background:var(--surface);color:var(--text);outline:none;}
-  .pw-wrap input:focus{border-color:var(--accent);}
-  .login-err{font-size:12px;color:var(--danger);margin-bottom:12px;display:none;text-align:center;}
-  .login-loading{font-size:12px;color:var(--text3);text-align:center;margin-bottom:12px;}
-  .btn-primary{width:100%;padding:12px 22px;background:#0071e3;color:#fff;border:none;border-radius:980px;font-family:var(--sans);font-size:17px;font-weight:400;cursor:pointer;transition:all .2s;letter-spacing:normal;}
-  .btn-primary:hover{background:#0077ed;}
-  .btn-primary:disabled{background:#0071e3;opacity:.4;cursor:not-allowed;}
+  .login-title{font-family:var(--display);font-size:28px;font-weight:600;line-height:1.14;letter-spacing:0.1px;margin-bottom:32px;text-align:center;}
+  .name-select{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:980px;font-family:var(--sans);font-size:17px;background:var(--surface2);color:var(--text);outline:none;margin-bottom:14px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e6e73' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+  .name-select:focus{border-color:var(--blue);}
+  .pw-wrap{margin-bottom:14px;display:none;}
+  .pw-wrap input{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:980px;font-family:var(--sans);font-size:17px;background:var(--surface2);color:var(--text);outline:none;}
+  .pw-wrap input:focus{border-color:var(--blue);}
+  .login-err{font-size:14px;color:var(--danger);margin-bottom:12px;display:none;text-align:center;}
+  .login-loading{font-size:14px;color:var(--text3);text-align:center;margin-bottom:12px;}
+  .btn-primary{width:100%;padding:12px 22px;background:var(--blue);color:#fff;border:none;border-radius:980px;font-family:var(--sans);font-size:17px;font-weight:400;cursor:pointer;transition:background .2s;letter-spacing:normal;}
+  .btn-primary:hover{background:var(--blue-h);}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;}
 
   /* APP */
   #app-screen{display:none;min-height:100vh;}
   .app-header{background:rgba(255,255,255,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,0.1);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
   .app-header-name{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:normal;}
-  .app-header-period{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:1px;}
-  .logout-btn{font-size:14px;color:#0071e3;background:transparent;border:1px solid #0071e3;border-radius:980px;padding:5px 14px;cursor:pointer;font-family:var(--sans);transition:all .2s;}
-  .logout-btn:hover{background:#0071e3;color:#fff;}
+  .logout-btn{font-size:14px;color:var(--blue);background:transparent;border:1px solid var(--blue);border-radius:980px;padding:5px 14px;cursor:pointer;font-family:var(--sans);transition:all .2s;letter-spacing:normal;}
+  .logout-btn:hover{background:var(--blue);color:#fff;}
 
   /* TABS */
-  .tab-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);}
-  .tab-btn{flex:1;padding:12px 8px;font-family:var(--sans);font-size:15px;font-weight:400;color:var(--text2);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;-webkit-tap-highlight-color:transparent;letter-spacing:normal;}
-  .tab-btn.active{color:#0071e3;border-bottom-color:#0071e3;}
+  .tab-bar{display:flex;background:var(--surface);border-bottom:1px solid rgba(0,0,0,0.08);}
+  .tab-btn{flex:1;padding:12px 8px;font-family:var(--sans);font-size:13px;font-weight:400;color:var(--text2);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;-webkit-tap-highlight-color:transparent;letter-spacing:normal;line-height:1.3;}
+  .tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
   .tab-panel{display:none;}
   .tab-panel.active{display:block;}
 
-  /* CONFIRMED TABLE */
+  /* PANEL */
   .panel-wrap{padding:16px;max-width:900px;margin:0 auto;}
-  .panel-meta{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;text-align:right;}
-  .table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:10px;}
+  .period-badge{display:inline-block;background:var(--surface2);border-radius:980px;padding:4px 14px;font-size:13px;color:var(--text2);margin-bottom:14px;letter-spacing:normal;}
+  .panel-meta{font-size:12px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;text-align:right;}
+
+  /* CONFIRMED TABLE */
+  .table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:14px;}
   .cs-table{border-collapse:collapse;font-size:11px;min-width:100%;}
   .cs-table th{background:#1d1d1f;color:#f5f5f7;padding:8px 7px;text-align:center;font-weight:600;white-space:nowrap;letter-spacing:normal;}
-  .cs-table th.th-date{text-align:left;min-width:72px;position:sticky;left:0;z-index:2;background:#1A1814;}
-  .cs-table td{padding:5px 6px;text-align:center;border-bottom:.5px solid var(--border);white-space:nowrap;font-family:var(--mono);font-size:11px;}
-  .cs-table td.td-date{text-align:left;font-family:var(--sans);font-weight:500;font-size:12px;position:sticky;left:0;background:var(--surface);z-index:1;padding:5px 8px;}
+  .cs-table th.th-date{text-align:left;min-width:72px;position:sticky;left:0;z-index:2;background:#1d1d1f;}
   .cs-table th.th-biko{min-width:80px;}
-  .cs-table td.td-biko{text-align:left;font-family:var(--sans);font-size:11px;color:var(--text2);padding:5px 8px;white-space:normal;max-width:120px;}
+  .cs-table td{padding:5px 6px;text-align:center;border-bottom:.5px solid var(--border);white-space:nowrap;font-family:var(--mono);font-size:11px;}
+  .cs-table td.td-date{text-align:left;font-family:var(--sans);font-weight:600;font-size:12px;position:sticky;left:0;background:var(--surface);z-index:1;padding:5px 8px;letter-spacing:normal;}
+  .cs-table td.td-biko{text-align:left;font-family:var(--sans);font-size:11px;color:var(--text2);padding:5px 8px;white-space:normal;max-width:120px;letter-spacing:normal;}
   .cs-table tr.sat td{background:var(--sat-bg);}
   .cs-table tr.sat td.td-date{background:var(--sat-bg);color:var(--sat);}
   .cs-table tr.sun td{background:var(--sun-bg);}
   .cs-table tr.sun td.td-date{background:var(--sun-bg);color:var(--sun);}
-  .cs-table td.has-val{color:var(--accent);font-weight:500;line-height:1.6;}
+  .cs-table td.has-val{color:var(--blue);font-weight:500;line-height:1.6;}
   .cs-table td.no-val{color:var(--text3);}
-  .loading-msg{padding:32px;text-align:center;font-size:13px;color:var(--text3);}
-  .unpublished-msg{padding:40px 16px;text-align:center;}
-  .unpublished-msg p{font-size:14px;color:var(--text2);margin-bottom:6px;}
-  .unpublished-msg small{font-size:12px;color:var(--text3);}
+  .loading-msg{padding:32px;text-align:center;font-size:15px;color:var(--text3);}
+  .unpublished-msg{padding:48px 16px;text-align:center;}
+  .unpublished-msg p{font-family:var(--display);font-size:17px;font-weight:600;color:var(--text);margin-bottom:8px;}
+  .unpublished-msg small{font-size:14px;color:var(--text3);}
 
   /* HOPE SHIFT */
   .shift-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
-  .day-row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;}
-  .day-row.has-shift{border-left:3px solid var(--accent);}
-  .day-row.sat{border-left:3px solid var(--sat);}
-  .day-row.sun{border-left:3px solid var(--sun);}
-  .day-label{width:52px;flex-shrink:0;font-size:13px;font-weight:500;line-height:1.3;}
+  .day-row{background:var(--surface2);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;}
+  .day-row.has-shift{background:#e8f0fb;}
+  .day-row.sat{background:var(--sat-bg);}
+  .day-row.sun{background:var(--sun-bg);}
+  .day-label{width:56px;flex-shrink:0;font-size:13px;font-weight:600;line-height:1.3;letter-spacing:normal;}
   .day-label .dow{display:block;font-size:10px;font-weight:400;color:var(--text3);margin-top:1px;}
   .day-row.sat .day-label{color:var(--sat);}
   .day-row.sun .day-label{color:var(--sun);}
   .spinner-group{display:flex;align-items:center;gap:5px;flex-shrink:0;}
-  .spinner{display:flex;align-items:center;border:1px solid var(--border);border-radius:7px;overflow:hidden;background:var(--surface2);}
+  .spinner{display:flex;align-items:center;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface);}
   .spin-btn{width:28px;height:32px;border:none;background:transparent;color:var(--text2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
-  .spin-btn:active{background:var(--border);}
+  .spin-btn:active{background:var(--surface2);}
   .spin-val{width:46px;height:32px;text-align:center;font-family:var(--mono);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--border);border-right:1px solid var(--border);background:var(--surface);}
   .spin-val.empty{color:var(--text3);}
   .arrow-sep{font-size:11px;color:var(--text3);flex-shrink:0;}
   .time-label{font-family:var(--mono);font-size:10px;color:var(--text3);flex:1;min-width:0;white-space:nowrap;}
-  .clear-btn{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--text3);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;line-height:1;}
-  .clear-btn:hover{background:var(--sun-bg);border-color:#D85A30;color:var(--sun);}
-  .comment-section{background:var(--surface2);border:none;border-radius:18px;padding:16px 18px;margin-bottom:16px;}
-  .comment-section label{display:block;font-size:11px;font-weight:500;letter-spacing:.05em;color:var(--text2);margin-bottom:8px;}
-  .comment-section textarea{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;color:var(--text);background:var(--surface2);resize:none;outline:none;line-height:1.6;}
-  .comment-section textarea:focus{border-color:var(--accent);background:var(--surface);}
+  .clear-btn{width:26px;height:26px;border:1px solid var(--border);border-radius:980px;background:transparent;color:var(--text3);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;line-height:1;}
+  .clear-btn:hover{background:var(--sun-bg);border-color:var(--danger);color:var(--danger);}
+  .comment-section{background:var(--surface2);border-radius:18px;padding:16px 18px;margin-bottom:16px;}
+  .comment-section label{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px;letter-spacing:normal;}
+  .comment-section textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:12px;font-family:var(--sans);font-size:15px;color:var(--text);background:var(--surface);resize:none;outline:none;line-height:1.5;letter-spacing:normal;}
+  .comment-section textarea:focus{border-color:var(--blue);}
   .submit-wrap{padding-bottom:32px;}
-  .status-bar{font-size:11px;color:var(--text3);text-align:center;margin-bottom:10px;font-family:var(--mono);}
-  .status-bar span{color:var(--accent);font-weight:500;}
+  .status-bar{font-size:12px;color:var(--text3);text-align:center;margin-bottom:10px;font-family:var(--mono);}
+  .status-bar span{color:var(--blue);font-weight:500;}
 
   /* ADMIN */
   #admin-screen{display:none;min-height:100vh;}
-  .admin-header{background:rgba(0,0,0,0.85);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);color:#f5f5f7;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+  .admin-header{background:rgba(0,0,0,0.88);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);color:#f5f5f7;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
   .admin-title{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:normal;}
-  .admin-sub{font-size:11px;opacity:.5;font-family:var(--mono);margin-top:2px;}
   .admin-wrap{padding:16px;max-width:520px;margin:0 auto;}
   .section-label{font-size:12px;font-weight:400;letter-spacing:.02em;color:var(--text2);margin-bottom:8px;margin-top:16px;}
-  .card{background:var(--surface2);border:none;border-radius:18px;padding:16px 20px;margin-bottom:12px;}
+  .card{background:var(--surface2);border-radius:18px;padding:16px 20px;margin-bottom:12px;}
   .card-title{font-family:var(--display);font-size:17px;font-weight:600;color:var(--text);margin-bottom:4px;letter-spacing:normal;}
-  .card-sub{font-size:11px;color:var(--text2);margin-bottom:12px;}
-  .btn-accent{padding:8px 22px;background:#0071e3;color:#fff;border:none;border-radius:980px;font-family:var(--sans);font-size:15px;font-weight:400;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:normal;}
-  .btn-accent:hover{background:#0077ed;}
+  .card-sub{font-size:13px;color:var(--text2);margin-bottom:12px;letter-spacing:normal;}
+  .period-select{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:980px;font-family:var(--sans);font-size:15px;background:var(--surface);color:var(--text);outline:none;margin-bottom:10px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e6e73' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;letter-spacing:normal;}
+  .period-select:focus{border-color:var(--blue);}
+  .current-period{font-size:12px;color:var(--text3);margin-bottom:10px;font-family:var(--mono);}
+  .btn-accent{padding:9px 22px;background:var(--blue);color:#fff;border:none;border-radius:980px;font-family:var(--sans);font-size:15px;font-weight:400;cursor:pointer;transition:background .2s;white-space:nowrap;letter-spacing:normal;}
+  .btn-accent:hover{background:var(--blue-h);}
   .btn-accent:disabled{opacity:.4;cursor:not-allowed;}
-  .btn-sm{padding:5px 14px;background:transparent;color:#0071e3;border:1px solid #0071e3;border-radius:980px;font-family:var(--sans);font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:normal;}
-  .btn-sm:hover{background:#0071e3;color:#fff;}
-  .btn-sm:disabled{opacity:.35;cursor:not-allowed;}
-  .person-row{display:flex;flex-direction:column;padding:9px 0;border-bottom:.5px solid var(--border);}
-  .person-row:last-child{border-bottom:none;}
-  .person-top{display:flex;align-items:center;justify-content:space-between;}
-  .comment-bubble{margin-top:7px;padding:7px 10px;background:var(--surface2);border-left:2px solid #EF9F27;border-radius:0 6px 6px 0;font-size:11px;color:var(--text2);line-height:1.5;}
-  .comment-label{font-size:10px;color:#BA7517;font-weight:500;margin-bottom:3px;}
-  .person-name{font-size:13px;color:var(--text);}
-  .badge{font-size:10px;padding:2px 7px;border-radius:20px;margin-left:6px;}
-  .badge-done{background:var(--accent-light);color:var(--accent);}
-  .badge-none{background:var(--surface2);color:var(--text3);}
-  .publish-card{background:var(--surface);border:2px solid #0071e3;border-radius:18px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
-  .publish-info p{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
-  .publish-info small{font-size:11px;color:var(--text3);font-family:var(--mono);}
+  .publish-card{background:var(--surface);border:2px solid var(--blue);border-radius:18px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+  .publish-info p{font-family:var(--display);font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px;letter-spacing:normal;}
+  .publish-info small{font-size:12px;color:var(--text3);font-family:var(--mono);}
 
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(29,29,31,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:#f5f5f7;padding:12px 22px;border-radius:980px;font-size:15px;font-weight:400;transition:transform .3s ease;z-index:100;white-space:nowrap;letter-spacing:normal;}
   .toast.show{transform:translateX(-50%) translateY(0);}
@@ -144,32 +134,27 @@
   <div class="login-card">
     <div class="login-logo">Shift Manager</div>
     <div class="login-title">シフト管理</div>
-    <div class="login-sub">4月16日（木）〜 4月30日（木）</div>
-    <div class="login-label">名前を選択</div>
     <div class="login-loading" id="login-loading">読み込み中...</div>
     <select class="name-select" id="name-select" style="display:none" onchange="onNameChange()">
-      <option value="">-- 選択してください --</option>
+      <option value="">名前 / Name</option>
     </select>
     <div class="pw-wrap" id="pw-wrap">
       <input type="password" id="pw-input" placeholder="パスワード" autocomplete="off">
     </div>
     <div class="login-err" id="login-err">パスワードが違います</div>
-    <button class="btn-primary" id="login-btn" disabled onclick="doLogin()">ログイン</button>
+    <button class="btn-primary" id="login-btn" disabled onclick="doLogin()">ログイン / Login</button>
   </div>
 </div>
 
 <!-- EMPLOYEE -->
 <div id="app-screen">
   <div class="app-header">
-    <div>
-      <div class="app-header-name" id="header-name"></div>
-      <div class="app-header-period">4/16 – 4/30</div>
-    </div>
+    <div class="app-header-name" id="header-name"></div>
     <button class="logout-btn" onclick="doLogout()">ログアウト</button>
   </div>
   <div class="tab-bar">
-    <button class="tab-btn active" id="tab-confirmed" onclick="switchTab('confirmed')">確定シフト</button>
-    <button class="tab-btn" id="tab-hope" onclick="switchTab('hope')">希望シフト提出</button>
+    <button class="tab-btn active" id="tab-confirmed" onclick="switchTab('confirmed')">確定シフト<br>Final shift</button>
+    <button class="tab-btn" id="tab-hope" onclick="switchTab('hope')">希望シフト<br>Shift Availability</button>
   </div>
   <div class="tab-panel active" id="panel-confirmed">
     <div class="panel-wrap">
@@ -179,14 +164,15 @@
   </div>
   <div class="tab-panel" id="panel-hope">
     <div class="panel-wrap">
+      <div class="period-badge" id="hope-period-badge">期間を読み込み中...</div>
       <div class="shift-list" id="shift-list"></div>
       <div class="comment-section">
-        <label>全体コメント（任意）</label>
+        <label>コメント（任意）</label>
         <textarea id="global-comment" rows="3" placeholder="シフト全体に関する希望・連絡事項など"></textarea>
       </div>
       <div class="submit-wrap">
         <div class="status-bar" id="status-bar"></div>
-        <button class="btn-primary" id="submit-btn" onclick="doSubmit()">提出する</button>
+        <button class="btn-primary" id="submit-btn" onclick="doSubmit()">提出 / Submit</button>
       </div>
     </div>
   </div>
@@ -195,27 +181,22 @@
 <!-- ADMIN -->
 <div id="admin-screen">
   <div class="admin-header">
-    <div>
-      <div class="admin-title">管理者ビュー</div>
-      <div class="admin-sub">4/16 – 4/30</div>
-    </div>
-    <button class="logout-btn" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="doLogout()">ログアウト</button>
+    <div class="admin-title">管理者ビュー</div>
+    <button class="logout-btn" style="color:var(--blue);border-color:var(--blue);" onclick="doLogout()">ログアウト</button>
   </div>
   <div class="admin-wrap">
-    <div class="section-label">希望 → 確定シフト コピー</div>
+    <div class="section-label">希望シフト対象期間</div>
     <div class="card">
-      <div class="card-title">全員一括コピー</div>
-      <div class="card-sub">全員の希望シフトを確定シフトへ上書きコピーします</div>
-      <button class="btn-accent" id="copy-all-btn" onclick="doCopyAll()">全員コピー実行</button>
-    </div>
-    <div class="card">
-      <div class="card-title">個別コピー</div>
-      <div class="card-sub">従業員を選んで個別にコピーします</div>
-      <div id="person-list"><div class="loading-msg" style="padding:16px 0;">読み込み中...</div></div>
+      <div class="card-title">対象期間</div>
+      <div class="card-sub">従業員の希望シフト入力期間を設定します</div>
+      <div class="current-period" id="current-period">現在の設定: 未設定</div>
+      <select class="period-select" id="period-select"></select>
+      <br>
+      <button class="btn-accent" id="reflect-btn" onclick="doReflectPeriod()">期間を反映</button>
     </div>
     <div class="publish-card">
       <div class="publish-info">
-        <p>確定シフトを従業員に公開</p>
+        <p>確定シフトを公開</p>
         <small id="last-published">最終公開: 未公開</small>
       </div>
       <button class="btn-accent" id="publish-btn" onclick="doPublish()">公開する</button>
@@ -232,17 +213,77 @@ const API_KEY = 'AIzaSyBAZkgcyDpLaPgSU05SRagot0_NPSSeNsk';
 const ADMIN_PW = 'Poteri1230';
 const MIN_VAL = 6.5, MAX_VAL = 16.0;
 const DOW_JP = ['日','月','火','水','木','金','土'];
-const DATES = [];
-for (let d = 16; d <= 30; d++) {
-  const dt = new Date(2026, 3, d);
-  DATES.push({ d, dow: DOW_JP[dt.getDay()], sat: dt.getDay()===6, sun: dt.getDay()===0 });
-}
 
 let currentUser = null;
 let appNames = [];
 let shiftState = {};
+let hopePeriod = { start: null, end: null }; // {start:'YYYY-MM-DD', end:'YYYY-MM-DD'}
+let hopeDates = []; // [{y,m,d,dow,sat,sun,key}]
 
-// ===== Sheets API (読み取り) =====
+// ===== 日付ユーティリティ =====
+function makeDates(startStr, endStr) {
+  const list = [];
+  const end = new Date(endStr);
+  for (let dt = new Date(startStr); dt <= end; dt.setDate(dt.getDate()+1)) {
+    const y = dt.getFullYear(), m = dt.getMonth()+1, d = dt.getDate();
+    list.push({
+      y, m, d,
+      dow: DOW_JP[dt.getDay()],
+      sat: dt.getDay()===6,
+      sun: dt.getDay()===0,
+      key: `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+    });
+  }
+  return list;
+}
+
+function fmtPeriod(startStr, endStr) {
+  if (!startStr || !endStr) return '';
+  const s = new Date(startStr), e = new Date(endStr);
+  const fmt = d => `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+  return fmt(s) + ' 〜 ' + fmt(e);
+}
+
+// 管理者用：操作日を含む範囲以降2ヶ月分の選択肢
+function generatePeriodOptions(today) {
+  const options = [];
+  // 今日が属する半月を起点に4期間分
+  let dt = new Date(today);
+  // 今日が1〜15なら前半、16〜末なら後半
+  const isFirstHalf = dt.getDate() <= 15;
+  // 起点を今日が属する半月の開始日に
+  if (isFirstHalf) {
+    dt = new Date(dt.getFullYear(), dt.getMonth(), 1);
+  } else {
+    dt = new Date(dt.getFullYear(), dt.getMonth(), 16);
+  }
+
+  for (let i = 0; i < 4; i++) {
+    const y = dt.getFullYear(), m = dt.getMonth()+1, d = dt.getDate();
+    let startD, endD;
+    if (d === 1) {
+      startD = new Date(y, m-1, 1);
+      endD   = new Date(y, m-1, 15);
+    } else {
+      startD = new Date(y, m-1, 16);
+      endD   = new Date(y, m, 0); // 月末
+    }
+    const startStr = `${startD.getFullYear()}-${String(startD.getMonth()+1).padStart(2,'0')}-${String(startD.getDate()).padStart(2,'0')}`;
+    const endStr   = `${endD.getFullYear()}-${String(endD.getMonth()+1).padStart(2,'0')}-${String(endD.getDate()).padStart(2,'0')}`;
+    const label = `${startD.getFullYear()}/${String(startD.getMonth()+1).padStart(2,'0')}/${String(startD.getDate()).padStart(2,'0')} 〜 ${endD.getFullYear()}/${String(endD.getMonth()+1).padStart(2,'0')}/${String(endD.getDate()).padStart(2,'0')}`;
+    options.push({ startStr, endStr, label });
+
+    // 次の半月へ
+    if (d === 1) {
+      dt = new Date(y, m-1, 16);
+    } else {
+      dt = new Date(y, m, 1);
+    }
+  }
+  return options;
+}
+
+// ===== Sheets API =====
 async function sheetsGet(range) {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID_JS}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
   const res = await fetch(url);
@@ -250,83 +291,33 @@ async function sheetsGet(range) {
   return res.json();
 }
 
-// ===== Apps Script (書き込み・操作) =====
-async function gasCall(params, timeout=25000) {
+// ===== Apps Script =====
+async function gasCall(params) {
   const url = APPS_SCRIPT_URL + '?' + params + '&t=' + Date.now();
-  try {
-    await fetch(url, { method:'GET', mode:'no-cors' });
-  } catch(e) {
-    console.warn('gasCall error:', e);
-  }
-}
-
-// ===== スプシからシフトデータを読む =====
-async function readSheetShifts(sheetName) {
-  const commentRowNum = 2 + DATES.length * 2; // = 32
-
-  // ヘッダーとコメント行を必ず取得
-  const [headerData, commentData] = await Promise.all([
-    sheetsGet(sheetName + '!A1:Z1'),
-    sheetsGet(sheetName + '!A' + commentRowNum + ':Z' + commentRowNum)
-  ]);
-
-  const header = (headerData.values && headerData.values[0]) || [];
-  const commentRow = (commentData.values && commentData.values[0]) || [];
-  if (!header.length) return {};
-
-  // シフトデータ取得（空の場合もある）
-  let shiftRows = [];
-  try {
-    const shiftData = await sheetsGet(sheetName + '!A2:Z' + (commentRowNum - 1));
-    shiftRows = shiftData.values || [];
-  } catch(e) {}
-
-  const result = {};
-  appNames.forEach(name => {
-    const colIdx = header.indexOf(name);
-    if (colIdx === -1) return;
-    result[name] = { shifts: {}, comment: '' };
-    DATES.forEach(({ d }, i) => {
-      const sr = i * 2;       // shiftRows は A2始まりなので0-indexed
-      const er = sr + 1;
-      const sv = shiftRows[sr] && shiftRows[sr][colIdx];
-      const ev = shiftRows[er] && shiftRows[er][colIdx];
-      result[name].shifts[String(d)] = {
-        s: sv !== undefined && sv !== '' ? parseFloat(sv) : null,
-        e: ev !== undefined && ev !== '' ? parseFloat(ev) : null
-      };
-    });
-    result[name].comment = commentRow[colIdx] ? String(commentRow[colIdx]) : '';
-  });
-  return result;
+  try { await fetch(url, { method:'GET', mode:'no-cors' }); } catch(e) {}
 }
 
 // ===== LOGIN =====
 async function loadUsers() {
-  appNames = [
-    '高城桃花','大辺陽輝','石橋李菜','清水由起子',
-    '松井愛弓','大貫理恵','山邉奈々葉','Sneha',
-    '平井環姫','清末真寿美','正田玲子','トゥオン',
-    '高見京子','雨宮一美'
-  ];
+  appNames = ['高城','大辺','石橋','清水','松井','大貫','山邉','Sneha','平井','清末','正田','トゥオン','高見','雨宮'];
   buildNameSelect(appNames);
   try {
     const data = await sheetsGet('ユーザ!A2:A30');
     const names = (data.values||[]).map(r=>String(r[0]).trim()).filter(n=>n&&n!=='管理者');
-    if (names.length > 0) { appNames = names; buildNameSelect(appNames); }
+    if (names.length>0) { appNames = names; buildNameSelect(appNames); }
   } catch(e) { console.warn('ユーザ取得失敗:', e); }
 }
 
 function buildNameSelect(names) {
   const sel = document.getElementById('name-select');
   const prev = sel.value;
-  sel.innerHTML = '<option value="">-- 選択してください --</option>';
+  sel.innerHTML = '<option value="">名前 / Name</option>';
   names.forEach(n => {
     const opt = document.createElement('option');
     opt.value = n; opt.textContent = n; sel.appendChild(opt);
   });
   const a = document.createElement('option');
-  a.value = '管理者'; a.textContent = '管理者'; sel.appendChild(a);
+  a.value='管理者'; a.textContent='管理者'; sel.appendChild(a);
   if (prev) sel.value = prev;
   document.getElementById('login-loading').style.display = 'none';
   sel.style.display = 'block';
@@ -334,7 +325,7 @@ function buildNameSelect(names) {
 
 function onNameChange() {
   const name = document.getElementById('name-select').value;
-  document.getElementById('pw-wrap').style.display = name==='管理者' ? 'block' : 'none';
+  document.getElementById('pw-wrap').style.display = name==='管理者'?'block':'none';
   document.getElementById('login-err').style.display = 'none';
   document.getElementById('login-btn').disabled = !name;
 }
@@ -342,9 +333,9 @@ function onNameChange() {
 function doLogin() {
   const name = document.getElementById('name-select').value;
   if (!name) return;
-  if (name === '管理者') {
+  if (name==='管理者') {
     if (document.getElementById('pw-input').value !== ADMIN_PW) {
-      document.getElementById('login-err').style.display = 'block'; return;
+      document.getElementById('login-err').style.display='block'; return;
     }
     showAdmin();
   } else {
@@ -360,8 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ===== APP =====
 function showApp() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-screen').style.display='block';
   document.getElementById('header-name').textContent = currentUser;
   switchTab('confirmed');
 }
@@ -371,8 +362,8 @@ function switchTab(tab) {
     document.getElementById('tab-'+t).classList.toggle('active', t===tab);
     document.getElementById('panel-'+t).classList.toggle('active', t===tab);
   });
-  if (tab === 'confirmed') loadConfirmedShift();
-  if (tab === 'hope') { resetSubmitBtn(); initHopeTab(); }
+  if (tab==='confirmed') loadConfirmedShift();
+  if (tab==='hope') { resetSubmitBtn(); initHopeTab(); }
 }
 
 // ===== 確定シフト =====
@@ -380,63 +371,118 @@ async function loadConfirmedShift() {
   document.getElementById('confirmed-body').innerHTML = '<div class="loading-msg">読み込み中...</div>';
   document.getElementById('confirmed-meta').textContent = '';
   try {
-    const metaData = await sheetsGet('メタ!A1:B2');
+    const metaData = await sheetsGet('メタ!A1:B4');
     const metaRows = metaData.values || [];
-    const published = metaRows[0] && String(metaRows[0][1]) === '1';
+    const published   = metaRows[0] && String(metaRows[0][1]) === '1';
     const publishedAt = metaRows[1] && metaRows[1][1] || '';
+
     if (!published) {
       document.getElementById('confirmed-body').innerHTML =
-        '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>管理者が公開すると表示されます</small></div>';
+        '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>The final shift has not been published yet.</small></div>';
       return;
     }
     document.getElementById('confirmed-meta').textContent = '公開日時: ' + publishedAt;
 
-    // シフトデータと備考列を並行取得
-    const totalRows = 1 + DATES.length * 2;
-    const [shiftsResult,備考Data] = await Promise.all([
-      readSheetShifts('確定シフト'),
-      sheetsGet('確定シフト!B1:B' + totalRows)
-    ]);
+    // 表示範囲：当日が属する半月 + 次の半月
+    const today = new Date();
+    const dispDates = getConfirmedDisplayDates(today);
 
-    // 備考列を行インデックスで管理（1行目はヘッダーなのでスキップ）
-    const 備考Rows = 備考Data.values || [];
-    const 備考Map = {};
-    DATES.forEach(({ d }, i) => {
-      const r = 1 + i * 2; // 0-indexed、1行目ヘッダースキップ
-      const val = 備考Rows[r] && 備考Rows[r][0];
-      備考Map[String(d)] = val ? String(val) : '';
-    });
+    // スプシから確定シフトを取得（ヘッダーで列を特定）
+    const headerData = await sheetsGet('確定シフト!A1:Z1');
+    const header = (headerData.values && headerData.values[0]) || [];
+    if (!header.length) {
+      document.getElementById('confirmed-body').innerHTML = '<div class="loading-msg">データがありません</div>';
+      return;
+    }
 
-    renderConfirmedTable(shiftsResult, 備考Map);
+    // 必要な行だけ取得するため全データを取得してフィルタ
+    const totalRows = await getConfirmedRows(header, dispDates);
+    renderConfirmedTable(header, totalRows, dispDates);
   } catch(e) {
     console.error(e);
     document.getElementById('confirmed-body').innerHTML =
-      '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>管理者が公開すると表示されます</small></div>';
+      '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>The final shift has not been published yet.</small></div>';
   }
 }
 
-function renderConfirmedTable(shifts, 備考Map) {
-  備考Map = 備考Map || {};
+function getConfirmedDisplayDates(today) {
+  // 当日が属する半月
+  const y = today.getFullYear(), m = today.getMonth()+1, d = today.getDate();
+  let p1start, p1end, p2start, p2end;
+  if (d <= 15) {
+    p1start = `${y}-${String(m).padStart(2,'0')}-01`;
+    p1end   = `${y}-${String(m).padStart(2,'0')}-15`;
+    const p2e = new Date(y, m, 0);
+    p2start = `${y}-${String(m).padStart(2,'0')}-16`;
+    p2end   = `${p2e.getFullYear()}-${String(p2e.getMonth()+1).padStart(2,'0')}-${String(p2e.getDate()).padStart(2,'0')}`;
+  } else {
+    const p1e = new Date(y, m, 0);
+    p1start = `${y}-${String(m).padStart(2,'0')}-16`;
+    p1end   = `${p1e.getFullYear()}-${String(p1e.getMonth()+1).padStart(2,'0')}-${String(p1e.getDate()).padStart(2,'0')}`;
+    const nm = m===12?1:m+1, ny = m===12?y+1:y;
+    p2start = `${ny}-${String(nm).padStart(2,'0')}-01`;
+    p2end   = `${ny}-${String(nm).padStart(2,'0')}-15`;
+  }
+  return makeDates(p1start, p2end);
+}
+
+async function getConfirmedRows(header, dispDates) {
+  // 確定シフト全体を取得して必要行だけ返す
+  const data = await sheetsGet('確定シフト!A1:Z200');
+  const rows = data.values || [];
+  // A列のラベルと日付を照合
+  const result = {};
+  rows.forEach((row, ri) => {
+    if (ri === 0) return; // ヘッダー行スキップ
+    const label = row[0] ? String(row[0]) : '';
+    // ラベル形式: MM/DD(曜)
+    dispDates.forEach(({ m, d, key }) => {
+      const expected = `${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
+      if (label.startsWith(expected)) {
+        if (!result[key]) result[key] = { startRow: row, endRow: null };
+        else if (!result[key].endRow) result[key].endRow = row;
+      }
+    });
+  });
+  return result;
+}
+
+function renderConfirmedTable(header, rowsMap, dispDates) {
+  const shortNames = appNames.map(n => n);
   let thead = '<tr><th class="th-date">日付</th><th class="th-biko">備考</th>';
-  appNames.forEach(n => { thead += `<th>${n}</th>`; });
+  shortNames.forEach(n => { thead += `<th>${n}</th>`; });
   thead += '</tr>';
+
+  const bikoIdx = header.indexOf('備考');
+
   let tbody = '';
-  DATES.forEach(({ d, dow, sat, sun }) => {
-    const trClass = sat ? 'sat' : sun ? 'sun' : '';
-    const biko = 備考Map[String(d)] || '';
-    let row = `<tr class="${trClass}"><td class="td-date">4/${d}(${dow})</td><td class="td-biko">${biko}</td>`;
+  dispDates.forEach(({ y, m, d, dow, sat, sun, key }) => {
+    const trClass = sat?'sat':sun?'sun':'';
+    const rowData = rowsMap[key];
+    const biko = (bikoIdx >= 0 && rowData && rowData.startRow && rowData.startRow[bikoIdx]) ? String(rowData.startRow[bikoIdx]) : '';
+    let row = `<tr class="${trClass}"><td class="td-date">${m}/${d}(${dow})</td><td class="td-biko">${biko}</td>`;
     appNames.forEach(name => {
-      const sd = shifts[name] && shifts[name].shifts;
-      const s = sd && sd[String(d)];
-      const sv = s && s.s !== null ? s.s : null;
-      const ev = s && s.e !== null ? s.e : null;
-      row += sv!==null && ev!==null
-        ? `<td class="has-val">${valToTime(sv)}<br>${valToTime(ev)}</td>`
-        : `<td class="no-val">—</td>`;
+      const colIdx = header.indexOf(name);
+      if (colIdx < 0) { row += '<td class="no-val">—</td>'; return; }
+      const sv = rowData && rowData.startRow && rowData.startRow[colIdx];
+      const ev = rowData && rowData.endRow   && rowData.endRow[colIdx];
+      if (sv && ev && sv !== '' && ev !== '') {
+        row += `<td class="has-val">${valToTime(parseFloat(sv))}<br>${valToTime(parseFloat(ev))}</td>`;
+      } else {
+        row += '<td class="no-val">—</td>';
+      }
     });
     row += '</tr>';
     tbody += row;
   });
+
+  // 期間バッジ
+  if (dispDates.length > 0) {
+    const s = dispDates[0], e = dispDates[dispDates.length-1];
+    document.getElementById('confirmed-meta').textContent =
+      `表示期間: ${s.y}/${String(s.m).padStart(2,'0')}/${String(s.d).padStart(2,'0')} 〜 ${e.y}/${String(e.m).padStart(2,'0')}/${String(e.d).padStart(2,'0')}`;
+  }
+
   document.getElementById('confirmed-body').innerHTML =
     `<div class="table-scroll"><table class="cs-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
 }
@@ -444,73 +490,122 @@ function renderConfirmedTable(shifts, 備考Map) {
 // ===== 希望シフト =====
 async function initHopeTab() {
   shiftState = {};
-  DATES.forEach(({d}) => { shiftState[d] = {s:null, e:null}; });
   document.getElementById('global-comment').value = '';
+  document.getElementById('hope-period-badge').textContent = '期間を読み込み中...';
 
+  // メタからhopePeriodを取得
   try {
-    const shifts = await readSheetShifts('希望シフト');
+    const metaData = await sheetsGet('メタ!A1:B4');
+    const rows = metaData.values || [];
+    const start = rows[2] && rows[2][1] ? String(rows[2][1]) : '';
+    const end   = rows[3] && rows[3][1] ? String(rows[3][1]) : '';
+    if (start && end) {
+      hopePeriod = { start, end };
+      hopeDates = makeDates(start, end);
+      document.getElementById('hope-period-badge').textContent = fmtPeriod(start, end);
+    } else {
+      document.getElementById('hope-period-badge').textContent = '対象期間が設定されていません';
+      document.getElementById('shift-list').innerHTML = '';
+      updateStatus();
+      return;
+    }
+  } catch(e) {
+    document.getElementById('hope-period-badge').textContent = '期間の取得に失敗しました';
+    return;
+  }
+
+  // 各日のshiftStateを初期化
+  hopeDates.forEach(({key}) => { shiftState[key] = {s:null, e:null}; });
+
+  // スプシから自分の希望シフトを取得
+  try {
+    const shifts = await readHopeShifts();
     if (shifts[currentUser]) {
-      DATES.forEach(({d}) => {
-        const s = shifts[currentUser].shifts[String(d)];
-        if (s) shiftState[d] = { s: s.s, e: s.e };
+      hopeDates.forEach(({key}) => {
+        const s = shifts[currentUser].shifts && shifts[currentUser].shifts[key];
+        if (s) shiftState[key] = { s: s.s, e: s.e };
       });
-      // コメントも反映
       if (shifts[currentUser].comment) {
         document.getElementById('global-comment').value = shifts[currentUser].comment;
       }
     }
-  } catch(e) {
-    console.warn('希望シフト取得失敗:', e);
-  }
+  } catch(e) { console.warn('希望シフト取得失敗:', e); }
 
   buildShiftList();
   updateStatus();
 }
 
-// ===== 希望シフト提出 =====
+async function readHopeShifts() {
+  if (!hopeDates.length) return {};
+  const commentRowNum = 2 + hopeDates.length * 2;
+  const [headerData, commentData] = await Promise.all([
+    sheetsGet('希望シフト!A1:Z1'),
+    sheetsGet('希望シフト!A' + commentRowNum + ':Z' + commentRowNum)
+  ]);
+  const header     = (headerData.values  && headerData.values[0])  || [];
+  const commentRow = (commentData.values && commentData.values[0]) || [];
+  if (!header.length) return {};
+
+  let shiftRows = [];
+  try {
+    const shiftData = await sheetsGet('希望シフト!A2:Z' + (commentRowNum-1));
+    shiftRows = shiftData.values || [];
+  } catch(e) {}
+
+  const result = {};
+  appNames.forEach(name => {
+    const colIdx = header.indexOf(name);
+    if (colIdx === -1) return;
+    result[name] = { shifts: {}, comment: '' };
+    hopeDates.forEach(({ key }, i) => {
+      const sr = i * 2;
+      const er = sr + 1;
+      const sv = shiftRows[sr] && shiftRows[sr][colIdx];
+      const ev = shiftRows[er] && shiftRows[er][colIdx];
+      result[name].shifts[key] = {
+        s: sv !== undefined && sv !== '' ? parseFloat(sv) : null,
+        e: ev !== undefined && ev !== '' ? parseFloat(ev) : null
+      };
+    });
+    result[name].comment = commentRow[colIdx] ? String(commentRow[colIdx]) : '';
+  });
+  return result;
+}
+
+// ===== 提出 =====
 async function doSubmit() {
   const payload = {
     name: currentUser,
     shifts: JSON.parse(JSON.stringify(shiftState)),
     comment: document.getElementById('global-comment').value,
+    periodStart: hopePeriod.start,
+    periodEnd:   hopePeriod.end,
     submittedAt: new Date().toISOString()
   };
   const btn = document.getElementById('submit-btn');
-  btn.disabled = true; btn.textContent = '送信中...';
-  btn.style.background = '';
-
-  // 送信
+  btn.disabled = true; btn.textContent = '送信中...'; btn.style.background = '';
   await gasCall('data=' + encodeURIComponent(JSON.stringify(payload)));
 
-  // 3秒待ってからスプシ再読み込みして照合
   btn.textContent = '確認中...';
   await new Promise(r => setTimeout(r, 3000));
 
   try {
-    const latest = await readSheetShifts('希望シフト');
+    const latest = await readHopeShifts();
     const latestUser = (latest[currentUser] && latest[currentUser].shifts) || {};
     let matched = true;
-    DATES.forEach(({ d }) => {
-      const sent = payload.shifts[d] || { s: null, e: null };
-      const got  = latestUser[String(d)] || { s: null, e: null };
+    hopeDates.forEach(({ key }) => {
+      const sent = payload.shifts[key] || { s: null, e: null };
+      const got  = latestUser[key]     || { s: null, e: null };
       if (sent.s !== got.s || sent.e !== got.e) matched = false;
     });
-
     if (matched) {
-      btn.disabled = false;
-      btn.textContent = '提出済み ✓';
-      btn.style.background = '#34c759';
+      btn.disabled = false; btn.textContent = '提出済み ✓'; btn.style.background = '#34c759';
     } else {
-      btn.disabled = false;
-      btn.textContent = '提出';
-      btn.style.background = '';
+      btn.disabled = false; btn.textContent = '提出 / Submit'; btn.style.background = '';
       showToast('エラー。再度「提出」を押してください');
     }
   } catch(e) {
-    // 再読み込み失敗時は判定できないので提出ボタンに戻す
-    btn.disabled = false;
-    btn.textContent = '提出';
-    btn.style.background = '';
+    btn.disabled = false; btn.textContent = '提出 / Submit'; btn.style.background = '';
     showToast('確認できませんでした。再度「提出」を押してください');
   }
 }
@@ -518,170 +613,162 @@ async function doSubmit() {
 function resetSubmitBtn() {
   const btn = document.getElementById('submit-btn');
   if (!btn) return;
-  btn.textContent = '提出';
-  btn.style.background = '';
-  btn.disabled = false;
+  btn.textContent = '提出 / Submit'; btn.style.background = ''; btn.disabled = false;
 }
 
 // ===== ADMIN =====
 function showAdmin() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('admin-screen').style.display = 'block';
-  const ts = localStorage.getItem('lastPublished');
-  if (ts) document.getElementById('last-published').textContent = '最終公開: ' + ts;
-  buildPersonList();
+  buildPeriodSelect();
+  loadAdminMeta();
 }
 
-async function buildPersonList() {
-  const wrap = document.getElementById('person-list');
-  wrap.innerHTML = '<div class="loading-msg" style="padding:12px 0;">読み込み中...</div>';
-  let submitted = {};
-  let comments = {};
+async function loadAdminMeta() {
   try {
-    const shifts = await readSheetShifts('希望シフト');
-    appNames.forEach(name => {
-      const sd = shifts[name] && shifts[name].shifts;
-      submitted[name] = DATES.some(({d}) => {
-        const s = sd && sd[String(d)];
-        return s && (s.s !== null || s.e !== null);
-      });
-      comments[name] = (shifts[name] && shifts[name].comment) || '';
-    });
-  } catch(e) {
-    appNames.forEach(n => { submitted[n] = false; comments[n] = ''; });
-  }
+    const metaData = await sheetsGet('メタ!A1:B4');
+    const rows = metaData.values || [];
+    const publishedAt = rows[1] && rows[1][1] ? String(rows[1][1]) : '';
+    const hopeStart   = rows[2] && rows[2][1] ? String(rows[2][1]) : '';
+    const hopeEnd     = rows[3] && rows[3][1] ? String(rows[3][1]) : '';
+    if (publishedAt) document.getElementById('last-published').textContent = '最終公開: ' + publishedAt;
+    if (hopeStart && hopeEnd) {
+      document.getElementById('current-period').textContent = '現在の設定: ' + fmtPeriod(hopeStart, hopeEnd);
+      // プルダウンで一致する選択肢があれば選択状態にする
+      const sel = document.getElementById('period-select');
+      for (let i = 0; i < sel.options.length; i++) {
+        const opt = sel.options[i];
+        if (opt.dataset.start === hopeStart && opt.dataset.end === hopeEnd) {
+          sel.selectedIndex = i; break;
+        }
+      }
+    }
+  } catch(e) { console.warn('メタ取得失敗:', e); }
+}
 
-  wrap.innerHTML = '';
-  appNames.forEach(name => {
-    const isDone = submitted[name];
-    const comment = comments[name];
-    const row = document.createElement('div');
-    row.className = 'person-row';
-    row.innerHTML = `
-      <div class="person-top">
-        <div>
-          <span class="person-name">${name}</span>
-          <span class="badge ${isDone?'badge-done':'badge-none'}">${isDone?'提出済':'未提出'}</span>
-        </div>
-        <button class="btn-sm" ${isDone?'':'disabled'} onclick="doCopyOne('${name}', this)">コピー</button>
-      </div>
-      ${comment ? `<div class="comment-bubble"><div class="comment-label">コメント</div>${comment}</div>` : ''}
-    `;
-    wrap.appendChild(row);
+function buildPeriodSelect() {
+  const sel = document.getElementById('period-select');
+  sel.innerHTML = '';
+  const today = new Date();
+  const options = generatePeriodOptions(today);
+  options.forEach(({ startStr, endStr, label }) => {
+    const opt = document.createElement('option');
+    opt.value = startStr + '/' + endStr;
+    opt.textContent = label;
+    opt.dataset.start = startStr;
+    opt.dataset.end   = endStr;
+    sel.appendChild(opt);
   });
 }
 
-async function doCopyAll() {
-  const btn = document.getElementById('copy-all-btn');
-  btn.disabled = true; btn.textContent = '実行中...';
-  await gasCall('action=copyAll');
-  btn.disabled = false; btn.textContent = '全員コピー実行';
-  showToast('全員の希望シフトをコピーしました');
-}
-
-async function doCopyOne(name, btn) {
-  btn.disabled = true; btn.textContent = '処理中...';
-  await gasCall('action=copyOne&name=' + encodeURIComponent(name));
-  btn.disabled = false; btn.textContent = 'コピー';
-  showToast(name + ' をコピーしました');
+async function doReflectPeriod() {
+  const sel = document.getElementById('period-select');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt) return;
+  const start = opt.dataset.start, end = opt.dataset.end;
+  const btn = document.getElementById('reflect-btn');
+  btn.disabled = true; btn.textContent = '設定中...';
+  await gasCall('action=setHopePeriod&start=' + encodeURIComponent(start) + '&end=' + encodeURIComponent(end));
+  await new Promise(r => setTimeout(r, 2000));
+  btn.disabled = false; btn.textContent = '期間を反映';
+  document.getElementById('current-period').textContent = '現在の設定: ' + fmtPeriod(start, end);
+  showToast('対象期間を設定しました');
 }
 
 async function doPublish() {
   const btn = document.getElementById('publish-btn');
   btn.disabled = true; btn.textContent = '公開中...';
   await gasCall('action=publish');
+  await new Promise(r => setTimeout(r, 2000));
   btn.disabled = false; btn.textContent = '公開する';
   const ts = new Date().toLocaleString('ja-JP');
-  localStorage.setItem('lastPublished', ts);
   document.getElementById('last-published').textContent = '最終公開: ' + ts;
   showToast('確定シフトを公開しました');
+}
+
+// ===== シフトリスト構築 =====
+function buildShiftList() {
+  const list = document.getElementById('shift-list');
+  list.innerHTML = '';
+  hopeDates.forEach(({key, m, d, dow, sat, sun}) => {
+    const row = document.createElement('div');
+    row.className = 'day-row'+(sat?' sat':sun?' sun':'');
+    row.id = 'row-'+key;
+    row.innerHTML = `
+      <div class="day-label">${m}/${d}<span class="dow">${dow}</span></div>
+      <div class="spinner-group">
+        <div class="spinner">
+          <button class="spin-btn" ontouchstart="" onclick="spin('${key}','s',-1)">−</button>
+          <div class="spin-val ${shiftState[key].s===null?'empty':''}" id="sv-${key}-s">${toDisp(shiftState[key].s)}</div>
+          <button class="spin-btn" ontouchstart="" onclick="spin('${key}','s',1)">+</button>
+        </div>
+        <div class="arrow-sep">→</div>
+        <div class="spinner">
+          <button class="spin-btn" ontouchstart="" onclick="spin('${key}','e',-1)">−</button>
+          <div class="spin-val ${shiftState[key].e===null?'empty':''}" id="sv-${key}-e">${toDisp(shiftState[key].e)}</div>
+          <button class="spin-btn" ontouchstart="" onclick="spin('${key}','e',1)">+</button>
+        </div>
+      </div>
+      <div class="time-label" id="tl-${key}">${getTimeLabel(key)}</div>
+      <button class="clear-btn" ontouchstart="" onclick="clearDay('${key}')">✕</button>`;
+    list.appendChild(row);
+    updateRowStyle(key);
+  });
+}
+
+function getTimeLabel(key) {
+  const s=shiftState[key].s, e=shiftState[key].e;
+  if (s===null&&e===null) return '休み';
+  return (s!==null?toTime(s):'?')+'〜'+(e!==null?toTime(e):'?');
+}
+
+function spin(key, side, dir) {
+  let cur = shiftState[key][side];
+  if (cur===null) { cur = side==='s'?MIN_VAL:MAX_VAL; }
+  else {
+    cur = Math.round((cur+dir*0.5)*100)/100;
+    if (cur<MIN_VAL) { shiftState[key][side]=null; updateSpinUI(key,side); updateRowStyle(key); updateStatus(); resetSubmitBtn(); return; }
+    if (cur>MAX_VAL) cur=MAX_VAL;
+  }
+  shiftState[key][side]=cur;
+  updateSpinUI(key,side); updateRowStyle(key); updateStatus(); resetSubmitBtn();
+}
+
+function updateSpinUI(key, side) {
+  const v=shiftState[key][side];
+  const el=document.getElementById('sv-'+key+'-'+side);
+  if (!el) return;
+  el.textContent=toDisp(v);
+  el.className='spin-val'+(v===null?' empty':'');
+  document.getElementById('tl-'+key).textContent=getTimeLabel(key);
+}
+
+function updateRowStyle(key) {
+  const row=document.getElementById('row-'+key);
+  if (!row) return;
+  const dt=hopeDates.find(x=>x.key===key);
+  row.className='day-row'+(dt.sat?' sat':dt.sun?' sun':(shiftState[key].s!==null||shiftState[key].e!==null?' has-shift':''));
+}
+
+function clearDay(key) {
+  shiftState[key].s=null; shiftState[key].e=null;
+  updateSpinUI(key,'s'); updateSpinUI(key,'e');
+  updateRowStyle(key); updateStatus(); resetSubmitBtn();
+}
+
+function updateStatus() {
+  const count=hopeDates.filter(({key})=>shiftState[key]&&(shiftState[key].s!==null||shiftState[key].e!==null)).length;
+  document.getElementById('status-bar').innerHTML=`入力済み <span>${count}</span> / ${hopeDates.length} 日`;
 }
 
 // ===== ユーティリティ =====
 function valToTime(v) {
   if (v===null||v===undefined||v==='') return '';
-  v = parseFloat(v); if (isNaN(v)) return '';
-  return Math.floor(v) + ':' + (v%1>=0.4999?'30':'00');
+  v=parseFloat(v); if(isNaN(v)) return '';
+  return Math.floor(v)+':'+(v%1>=0.4999?'30':'00');
 }
-function toDisp(v) {
-  if (v===null) return '—';
-  return Math.floor(v) + ':' + (v%1>=0.4999?'30':'00');
-}
-function toTime(v) {
-  if (v===null) return null;
-  return Math.floor(v) + ':' + (v%1>=0.4999?'30':'00');
-}
-
-function buildShiftList() {
-  const list = document.getElementById('shift-list');
-  list.innerHTML = '';
-  DATES.forEach(({d,dow,sat,sun}) => {
-    const row = document.createElement('div');
-    row.className = 'day-row'+(sat?' sat':sun?' sun':'');
-    row.id = 'row-'+d;
-    row.innerHTML = `
-      <div class="day-label">4/${d}<span class="dow">${dow}</span></div>
-      <div class="spinner-group">
-        <div class="spinner">
-          <button class="spin-btn" ontouchstart="" onclick="spin(${d},'s',-1)">−</button>
-          <div class="spin-val ${shiftState[d].s===null?'empty':''}" id="sv-${d}-s">${toDisp(shiftState[d].s)}</div>
-          <button class="spin-btn" ontouchstart="" onclick="spin(${d},'s',1)">+</button>
-        </div>
-        <div class="arrow-sep">→</div>
-        <div class="spinner">
-          <button class="spin-btn" ontouchstart="" onclick="spin(${d},'e',-1)">−</button>
-          <div class="spin-val ${shiftState[d].e===null?'empty':''}" id="sv-${d}-e">${toDisp(shiftState[d].e)}</div>
-          <button class="spin-btn" ontouchstart="" onclick="spin(${d},'e',1)">+</button>
-        </div>
-      </div>
-      <div class="time-label" id="tl-${d}">${getTimeLabel(d)}</div>
-      <button class="clear-btn" ontouchstart="" onclick="clearDay(${d})">✕</button>`;
-    list.appendChild(row);
-    updateRowStyle(d);
-  });
-}
-function getTimeLabel(d) {
-  const s=shiftState[d].s, e=shiftState[d].e;
-  if (s===null&&e===null) return '休み';
-  return (s!==null?toTime(s):'?')+'〜'+(e!==null?toTime(e):'?');
-}
-function spin(d,key,dir) {
-  let cur=shiftState[d][key];
-  if (cur===null){cur=key==='s'?MIN_VAL:MAX_VAL;}
-  else {
-    cur=Math.round((cur+dir*0.5)*100)/100;
-    if (cur<MIN_VAL){shiftState[d][key]=null;updateSpinUI(d,key);updateRowStyle(d);updateStatus();resetSubmitBtn();return;}
-    if (cur>MAX_VAL) cur=MAX_VAL;
-  }
-  shiftState[d][key]=cur;
-  updateSpinUI(d,key);updateRowStyle(d);updateStatus();resetSubmitBtn();
-}
-function updateSpinUI(d,key) {
-  const v=shiftState[d][key];
-  const el=document.getElementById('sv-'+d+'-'+key);
-  if (!el) return;
-  el.textContent=toDisp(v);
-  el.className='spin-val'+(v===null?' empty':'');
-  document.getElementById('tl-'+d).textContent=getTimeLabel(d);
-}
-function updateRowStyle(d) {
-  const row=document.getElementById('row-'+d);
-  if (!row) return;
-  const dt=DATES.find(x=>x.d===d);
-  row.className='day-row'+(dt.sat?' sat':dt.sun?' sun':(shiftState[d].s!==null||shiftState[d].e!==null?' has-shift':''));
-}
-function clearDay(d) {
-  shiftState[d].s=null;shiftState[d].e=null;
-  updateSpinUI(d,'s');updateSpinUI(d,'e');
-  updateRowStyle(d);updateStatus();resetSubmitBtn();
-}
-function updateStatus() {
-  const count=DATES.filter(({d})=>shiftState[d].s!==null||shiftState[d].e!==null).length;
-  document.getElementById('status-bar').innerHTML=`入力済み <span>${count}</span> / ${DATES.length} 日`;
-}
-
-function saveLocal(name,data){try{localStorage.setItem('shift_'+name,JSON.stringify(data));}catch(e){}}
-function loadSaved(name){try{return JSON.parse(localStorage.getItem('shift_'+name));}catch(e){return null;}}
+function toDisp(v) { if(v===null) return '—'; return Math.floor(v)+':'+(v%1>=0.4999?'30':'00'); }
+function toTime(v) { if(v===null) return null; return Math.floor(v)+':'+(v%1>=0.4999?'30':'00'); }
 
 function doLogout() {
   currentUser=null;
