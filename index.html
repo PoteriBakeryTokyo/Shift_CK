@@ -544,31 +544,62 @@ async function initHopeTab() {
 
 async function readHopeShifts() {
   if (!hopeDates.length) return {};
-  const commentRowNum = 2 + hopeDates.length * 2;
-  const [headerData, commentData] = await Promise.all([
+
+  // ヘッダー・全データ・コメント行を取得
+  const [headerData, allData] = await Promise.all([
     sheetsGet('希望シフト!A1:Z1'),
-    sheetsGet('希望シフト!A' + commentRowNum + ':Z' + commentRowNum)
+    sheetsGet('希望シフト!A1:Z200')
   ]);
-  const header     = (headerData.values  && headerData.values[0])  || [];
-  const commentRow = (commentData.values && commentData.values[0]) || [];
+  const header  = (headerData.values && headerData.values[0]) || [];
+  const allRows = (allData.values)   || [];
   if (!header.length) return {};
 
-  let shiftRows = [];
-  try {
-    const shiftData = await sheetsGet('希望シフト!A2:Z' + (commentRowNum-1));
-    shiftRows = shiftData.values || [];
-  } catch(e) {}
+  // A列ラベルと行インデックスのマップを作成
+  // ラベル形式: MM/DD(曜) → YYYY-MM-DD キーに変換
+  const rowMap = {}; // key → { startRowIdx, endRowIdx }
+  let lastKey = null;
+  allRows.forEach((row, ri) => {
+    if (ri === 0) return;
+    const label = row[0] ? String(row[0]).trim() : '';
+    if (label === '') {
+      // 結合セルの2行目（終了時刻行）
+      if (lastKey && rowMap[lastKey] && rowMap[lastKey].endRowIdx === null) {
+        rowMap[lastKey].endRowIdx = ri;
+      }
+      return;
+    }
+    // A列に値あり → 開始時刻行。どの日付か照合
+    lastKey = null;
+    hopeDates.forEach(({ y, m, d, key }) => {
+      const expected = `${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
+      if (label.startsWith(expected)) {
+        rowMap[key] = { startRowIdx: ri, endRowIdx: null };
+        lastKey = key;
+      }
+    });
+  });
+
+  // 現在の期間の終了日の直後にあるコメント行を特定
+  const endDate = hopeDates[hopeDates.length - 1];
+  const endLabel = `${String(endDate.m).padStart(2,'0')}/${String(endDate.d).padStart(2,'0')}`;
+  let endRowIdx = -1;
+  for (let i = 0; i < allRows.length; i++) {
+    if (String(allRows[i][0] || '').trim().startsWith(endLabel)) {
+      endRowIdx = i; break;
+    }
+  }
+  // 終了日の開始行+2がコメント行（0-indexed）
+  const commentRow = endRowIdx >= 0 ? allRows[endRowIdx + 2] || [] : [];
 
   const result = {};
   appNames.forEach(name => {
     const colIdx = header.indexOf(name);
     if (colIdx === -1) return;
     result[name] = { shifts: {}, comment: '' };
-    hopeDates.forEach(({ key }, i) => {
-      const sr = i * 2;
-      const er = sr + 1;
-      const sv = shiftRows[sr] && shiftRows[sr][colIdx];
-      const ev = shiftRows[er] && shiftRows[er][colIdx];
+    hopeDates.forEach(({ key }) => {
+      const ri = rowMap[key];
+      const sv = ri && allRows[ri.startRowIdx] && allRows[ri.startRowIdx][colIdx];
+      const ev = ri && ri.endRowIdx !== null && allRows[ri.endRowIdx] && allRows[ri.endRowIdx][colIdx];
       result[name].shifts[key] = {
         s: sv !== undefined && sv !== '' ? parseFloat(sv) : null,
         e: ev !== undefined && ev !== '' ? parseFloat(ev) : null
