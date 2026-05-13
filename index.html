@@ -455,8 +455,8 @@ async function getConfirmedRows(header, dispDates) {
     }
     // A列に値あり → 開始時刻行
     lastKey = null;
-    dispDates.forEach(({ m, d, key }) => {
-      const expected = `${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
+    dispDates.forEach(({ y, m, d, key }) => {
+      const expected = `${y}/${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
       if (label.startsWith(expected)) {
         result[key] = { startRow: row, endRow: null };
         lastKey = key;
@@ -591,7 +591,7 @@ async function readHopeShifts() {
     // A列に値あり → 開始時刻行。どの日付か照合
     lastKey = null;
     hopeDates.forEach(({ y, m, d, key }) => {
-      const expected = `${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
+      const expected = `${y}/${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
       if (label.startsWith(expected)) {
         rowMap[key] = { startRowIdx: ri, endRowIdx: null };
         lastKey = key;
@@ -601,7 +601,7 @@ async function readHopeShifts() {
 
   // 現在の期間の終了日の直後にあるコメント行を特定
   const endDate = hopeDates[hopeDates.length - 1];
-  const endLabel = `${String(endDate.m).padStart(2,'0')}/${String(endDate.d).padStart(2,'0')}`;
+  const endLabel = `${endDate.y}/${String(endDate.m).padStart(2,'0')}/${String(endDate.d).padStart(2,'0')}`;
   let endRowIdx = -1;
   for (let i = 0; i < allRows.length; i++) {
     if (String(allRows[i][0] || '').trim().startsWith(endLabel)) {
