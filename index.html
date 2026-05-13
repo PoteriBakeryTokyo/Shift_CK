@@ -224,6 +224,16 @@ let hopePeriod = { start: null, end: null }; // {start:'YYYY-MM-DD', end:'YYYY-M
 let hopeDates = []; // [{y,m,d,dow,sat,sun,key}]
 
 // ===== 日付ユーティリティ =====
+// Sheets APIが返す日付ラベルをどんな形式でも {y, m, d} に変換する
+// 対応例: "2026/05/16", "2026/5/16", "2026-05-16", "05/16", "5/16"
+function parseDateLabel(label) {
+  let match = label.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+  if (match) return { y: +match[1], m: +match[2], d: +match[3] };
+  match = label.match(/^(\d{1,2})\/(\d{1,2})/);
+  if (match) return { y: null, m: +match[1], d: +match[2] };
+  return null;
+}
+
 function makeDates(startStr, endStr) {
   const list = [];
   const end = new Date(endStr);
@@ -455,13 +465,15 @@ async function getConfirmedRows(header, dispDates) {
     }
     // A列に値あり → 開始時刻行
     lastKey = null;
-    dispDates.forEach(({ m, d, key }) => {
-      const expected = `${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
-      if (label.startsWith(expected)) {
-        result[key] = { startRow: row, endRow: null };
-        lastKey = key;
-      }
-    });
+    const parsed = parseDateLabel(label);
+    if (parsed) {
+      dispDates.forEach(({ y, m, d, key }) => {
+        if (parsed.m === m && parsed.d === d && (parsed.y === null || parsed.y === y)) {
+          result[key] = { startRow: row, endRow: null };
+          lastKey = key;
+        }
+      });
+    }
   });
   return result;
 }
@@ -590,21 +602,23 @@ async function readHopeShifts() {
     }
     // A列に値あり → 開始時刻行。どの日付か照合
     lastKey = null;
-    hopeDates.forEach(({ y, m, d, key }) => {
-      const expected = `${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
-      if (label.startsWith(expected)) {
-        rowMap[key] = { startRowIdx: ri, endRowIdx: null };
-        lastKey = key;
-      }
-    });
+    const parsed = parseDateLabel(label);
+    if (parsed) {
+      hopeDates.forEach(({ y, m, d, key }) => {
+        if (parsed.m === m && parsed.d === d && (parsed.y === null || parsed.y === y)) {
+          rowMap[key] = { startRowIdx: ri, endRowIdx: null };
+          lastKey = key;
+        }
+      });
+    }
   });
 
   // 現在の期間の終了日の直後にあるコメント行を特定
   const endDate = hopeDates[hopeDates.length - 1];
-  const endLabel = `${String(endDate.m).padStart(2,'0')}/${String(endDate.d).padStart(2,'0')}`;
   let endRowIdx = -1;
   for (let i = 0; i < allRows.length; i++) {
-    if (String(allRows[i][0] || '').trim().startsWith(endLabel)) {
+    const p = parseDateLabel(String(allRows[i][0] || '').trim());
+    if (p && p.m === endDate.m && p.d === endDate.d && (p.y === null || p.y === endDate.y)) {
       endRowIdx = i; break;
     }
   }
