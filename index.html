@@ -213,7 +213,6 @@
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyT8aDa5ry55wtUmuccXRjei0HQeYdqsEmKUnHueyCsK75E4EpJPVL67GTWxmCmfNc1uQ/exec';
 const SHEET_ID_JS = '1rX7dBiBdqqViDo0kHDUJwtSeAiP8zcyddli8TbSQqvY';
 const API_KEY = 'AIzaSyBAZkgcyDpLaPgSU05SRagot0_NPSSeNsk';
-const ADMIN_PW = 'Poteri1230';
 const MIN_VAL = 6.5, MAX_VAL = 16.0;
 const DOW_JP = ['日','月','火','水','木','金','土'];
 
@@ -310,6 +309,13 @@ async function gasCall(params) {
   try { await fetch(url, { method:'GET', mode:'no-cors' }); } catch(e) {}
 }
 
+async function gasGet(params) {
+  const url = APPS_SCRIPT_URL + '?' + params + '&t=' + Date.now();
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('GAS ' + res.status);
+  return res.json();
+}
+
 // ===== LOGIN =====
 async function loadUsers() {
   appNames = ['高城','大辺','石橋','清水','松井','大貫','山邉','Sneha','平井','清末','正田','トゥオン','高見','雨宮'];
@@ -343,14 +349,25 @@ function onNameChange() {
   document.getElementById('login-btn').disabled = !name;
 }
 
-function doLogin() {
+async function doLogin() {
   const name = document.getElementById('name-select').value;
   if (!name) return;
-  if (name==='管理者') {
-    if (document.getElementById('pw-input').value !== ADMIN_PW) {
-      document.getElementById('login-err').style.display='block'; return;
+  if (name === '管理者') {
+    const pw = document.getElementById('pw-input').value;
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true; btn.textContent = '確認中...';
+    try {
+      const res = await gasGet('action=verifyAdmin&pw=' + encodeURIComponent(pw));
+      if (res.status === 'ok') {
+        showAdmin();
+      } else {
+        document.getElementById('login-err').style.display = 'block';
+      }
+    } catch(e) {
+      document.getElementById('login-err').style.display = 'block';
+    } finally {
+      btn.disabled = false; btn.textContent = 'ログイン / Login';
     }
-    showAdmin();
   } else {
     currentUser = name;
     showApp();
