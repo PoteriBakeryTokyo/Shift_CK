@@ -184,23 +184,35 @@
     <div class="admin-title">管理者ビュー</div>
     <button class="logout-btn" style="color:var(--blue);border-color:var(--blue);" onclick="doLogout()">ログアウト</button>
   </div>
-  <div class="admin-wrap">
-    <div class="section-label">希望シフト対象期間</div>
-    <div class="card">
-      <div class="card-title">対象期間</div>
-      <div class="card-sub">従業員の希望シフト入力期間を設定します</div>
-      <div class="current-period" id="current-period">現在の設定: 未設定</div>
-      <select class="period-select" id="period-select"></select>
-      <br>
-      <button class="btn-accent" id="reflect-btn" onclick="doReflectPeriod()">期間を反映</button>
+  <div class="tab-bar">
+    <button class="tab-btn active" id="admin-tab-confirmed" onclick="switchAdminTab('confirmed')">確定シフト<br>Final shift</button>
+    <button class="tab-btn" id="admin-tab-manage" onclick="switchAdminTab('manage')">管理者機能<br>Admin</button>
+  </div>
+  <div class="tab-panel active" id="admin-panel-confirmed">
+    <div class="panel-wrap">
+      <div class="panel-meta" id="admin-confirmed-meta"></div>
+      <div id="admin-confirmed-body"><div class="loading-msg">読み込み中...</div></div>
     </div>
-    <div class="publish-card">
-      <div style="flex:1;">
-        <p style="font-family:var(--display);font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">確定シフトを公開</p>
-        <select id="publish-period-select" style="width:100%;padding:8px 14px;border:1px solid var(--border);border-radius:980px;font-family:var(--sans);font-size:14px;background:var(--surface2);color:var(--text);outline:none;margin-bottom:10px;appearance:none;"></select>
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <small id="last-published" style="font-size:12px;color:var(--text3);font-family:var(--mono);">最終公開: 未公開</small>
-          <button class="btn-accent" id="publish-btn" onclick="doPublish()">公開する</button>
+  </div>
+  <div class="tab-panel" id="admin-panel-manage">
+    <div class="admin-wrap">
+      <div class="section-label">希望シフト対象期間</div>
+      <div class="card">
+        <div class="card-title">対象期間</div>
+        <div class="card-sub">従業員の希望シフト入力期間を設定します</div>
+        <div class="current-period" id="current-period">現在の設定: 未設定</div>
+        <select class="period-select" id="period-select"></select>
+        <br>
+        <button class="btn-accent" id="reflect-btn" onclick="doReflectPeriod()">期間を反映</button>
+      </div>
+      <div class="publish-card">
+        <div style="flex:1;">
+          <p style="font-family:var(--display);font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">確定シフトを公開</p>
+          <select id="publish-period-select" style="width:100%;padding:8px 14px;border:1px solid var(--border);border-radius:980px;font-family:var(--sans);font-size:14px;background:var(--surface2);color:var(--text);outline:none;margin-bottom:10px;appearance:none;"></select>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <small id="last-published" style="font-size:12px;color:var(--text3);font-family:var(--mono);">最終公開: 未公開</small>
+            <button class="btn-accent" id="publish-btn" onclick="doPublish()">公開する</button>
+          </div>
         </div>
       </div>
     </div>
@@ -711,6 +723,95 @@ function showAdmin() {
   document.getElementById('admin-screen').style.display = 'block';
   buildPeriodSelect();
   loadAdminMeta();
+  switchAdminTab('confirmed');
+}
+
+function switchAdminTab(tab) {
+  ['confirmed', 'manage'].forEach(t => {
+    document.getElementById('admin-tab-' + t).classList.toggle('active', t === tab);
+    document.getElementById('admin-panel-' + t).classList.toggle('active', t === tab);
+  });
+  if (tab === 'confirmed') loadAdminConfirmedShift();
+}
+
+async function loadAdminConfirmedShift() {
+  document.getElementById('admin-confirmed-body').innerHTML = '<div class="loading-msg">読み込み中...</div>';
+  document.getElementById('admin-confirmed-meta').textContent = '';
+  try {
+    const metaData = await sheetsGet('メタ!A1:B5');
+    const metaRows = metaData.values || [];
+    const published        = metaRows[0] && String(metaRows[0][1]) === '1';
+    const publishedPeriods = metaRows[4] && String(metaRows[4][1]) || '';
+
+    const publishedDates = new Set();
+    if (published && publishedPeriods) {
+      publishedPeriods.split(',').forEach(p => {
+        const [s, e] = p.trim().split('/');
+        if (!s || !e) return;
+        const end = new Date(e);
+        for (let dt = new Date(s); dt <= end; dt.setDate(dt.getDate()+1)) {
+          publishedDates.add(dt.toISOString().slice(0,10));
+        }
+      });
+    }
+
+    const today = new Date();
+    const dispDates = getConfirmedDisplayDates(today);
+    const headerData = await sheetsGet('確定シフト!A1:Z1');
+    const header = (headerData.values && headerData.values[0]) || [];
+    if (!header.length) {
+      document.getElementById('admin-confirmed-body').innerHTML = '<div class="loading-msg">データがありません</div>';
+      return;
+    }
+    const totalRows = await getConfirmedRows(header, dispDates);
+    renderAdminConfirmedTable(header, totalRows, dispDates, publishedDates);
+  } catch(e) {
+    console.error(e);
+    document.getElementById('admin-confirmed-body').innerHTML = '<div class="loading-msg">読み込みに失敗しました</div>';
+  }
+}
+
+function renderAdminConfirmedTable(header, rowsMap, dispDates, publishedDates) {
+  let thead = '<tr><th class="th-date">日付</th><th class="th-biko">備考</th>';
+  appNames.forEach(n => { thead += `<th>${n}</th>`; });
+  thead += '</tr>';
+
+  const bikoIdx = header.indexOf('備考');
+
+  let tbody = '';
+  dispDates.forEach(({ y, m, d, dow, sat, sun, key }) => {
+    const trClass = sat ? 'sat' : sun ? 'sun' : '';
+    const rowData = rowsMap[key];
+    const biko = (bikoIdx >= 0 && rowData && rowData.startRow && rowData.startRow[bikoIdx])
+      ? String(rowData.startRow[bikoIdx]) : '';
+    const dateKey = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isPublished = publishedDates.has(dateKey);
+
+    let row = `<tr class="${trClass}"><td class="td-date">${m}/${d}(${dow})</td><td class="td-biko">${biko}</td>`;
+    appNames.forEach(name => {
+      const colIdx = header.indexOf(name);
+      if (colIdx < 0) { row += '<td class="no-val">—</td>'; return; }
+      const sv = rowData && rowData.startRow && rowData.startRow[colIdx];
+      const ev = rowData && rowData.endRow   && rowData.endRow[colIdx];
+      if (sv && ev && sv !== '' && ev !== '') {
+        const cls = isPublished ? 'has-val' : 'no-val';
+        row += `<td class="${cls}">${valToTime(parseFloat(sv))}<br>${valToTime(parseFloat(ev))}</td>`;
+      } else {
+        row += '<td class="no-val">—</td>';
+      }
+    });
+    row += '</tr>';
+    tbody += row;
+  });
+
+  if (dispDates.length > 0) {
+    const s = dispDates[0], e = dispDates[dispDates.length-1];
+    document.getElementById('admin-confirmed-meta').textContent =
+      `表示期間: ${s.y}/${String(s.m).padStart(2,'0')}/${String(s.d).padStart(2,'0')} 〜 ${e.y}/${String(e.m).padStart(2,'0')}/${String(e.d).padStart(2,'0')}`;
+  }
+
+  document.getElementById('admin-confirmed-body').innerHTML =
+    `<div class="table-scroll"><table class="cs-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
 }
 
 async function loadAdminMeta() {
