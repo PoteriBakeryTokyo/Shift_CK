@@ -82,6 +82,8 @@
   .day-row.has-shift{background:var(--surface);}
   .day-row.sat{background:var(--sat-bg);}
   .day-row.sun{background:var(--sun-bg);}
+  .day-row.sat.has-shift{background:var(--sat-bg);}
+  .day-row.sun.has-shift{background:var(--sun-bg);}
   .day-label{width:56px;flex-shrink:0;font-size:13px;font-weight:600;line-height:1.3;letter-spacing:normal;}
   .day-label .dow{display:block;font-size:10px;font-weight:400;color:var(--text3);margin-top:1px;}
   .day-row.sat .day-label{color:var(--sat);}
@@ -548,8 +550,9 @@ function renderConfirmedTable(header, rowsMap, dispDates, publishedDates, bodyId
 
   if (dispDates.length > 0) {
     const s = dispDates[0], e = dispDates[dispDates.length-1];
-    document.getElementById(metaId).textContent =
-      `表示期間: ${s.y}/${String(s.m).padStart(2,'0')}/${String(s.d).padStart(2,'0')} 〜 ${e.y}/${String(e.m).padStart(2,'0')}/${String(e.d).padStart(2,'0')}`;
+    const el = document.getElementById(metaId);
+    const existing = el.textContent ? el.textContent + ' / ' : '';
+    el.textContent = existing + `表示期間: ${s.y}/${String(s.m).padStart(2,'0')}/${String(s.d).padStart(2,'0')} 〜 ${e.y}/${String(e.m).padStart(2,'0')}/${String(e.d).padStart(2,'0')}`;
   }
 
   document.getElementById(bodyId).innerHTML =
@@ -778,7 +781,6 @@ async function loadAdminConfirmedShift() {
     document.getElementById('admin-confirmed-body').innerHTML = '<div class="loading-msg">読み込みに失敗しました</div>';
   }
 }
-}
 
 async function loadAdminMeta() {
   try {
@@ -922,7 +924,8 @@ function updateRowStyle(key) {
   const row=document.getElementById('row-'+key);
   if (!row) return;
   const dt=hopeDates.find(x=>x.key===key);
-  row.className='day-row'+(dt.sat?' sat':dt.sun?' sun':(shiftState[key].s!==null||shiftState[key].e!==null?' has-shift':''));
+  const hasShift = shiftState[key].s!==null||shiftState[key].e!==null;
+  row.className='day-row'+(dt.sat?' sat':dt.sun?' sun':'')+(hasShift?' has-shift':'');
 }
 
 function clearDay(key) {
@@ -947,6 +950,7 @@ function toTime(v) { if(v===null) return null; return Math.floor(v)+':'+(v%1>=0.
 
 function doLogout() {
   currentUser=null;
+  shiftState={}; hopePeriod={start:null,end:null}; hopeDates=[];
   ['app-screen','admin-screen'].forEach(id=>document.getElementById(id).style.display='none');
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('name-select').value='';
