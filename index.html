@@ -507,7 +507,9 @@ async function getConfirmedRows(header, dispDates) {
   return result;
 }
 
-function renderConfirmedTable(header, rowsMap, dispDates, publishedDates) {
+function renderConfirmedTable(header, rowsMap, dispDates, publishedDates, bodyId, metaId) {
+  bodyId = bodyId || 'confirmed-body';
+  metaId = metaId || 'confirmed-meta';
   publishedDates = publishedDates || new Set();
   let thead = '<tr><th class="th-date">日付</th><th class="th-biko">備考</th>';
   appNames.forEach(n => { thead += `<th>${n}</th>`; });
@@ -521,7 +523,6 @@ function renderConfirmedTable(header, rowsMap, dispDates, publishedDates) {
     const rowData = rowsMap[key];
     const biko = (bikoIdx >= 0 && rowData && rowData.startRow && rowData.startRow[bikoIdx])
       ? String(rowData.startRow[bikoIdx]) : '';
-    // 公開済み判定
     const dateKey = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const isPublished = publishedDates.has(dateKey);
 
@@ -547,11 +548,11 @@ function renderConfirmedTable(header, rowsMap, dispDates, publishedDates) {
 
   if (dispDates.length > 0) {
     const s = dispDates[0], e = dispDates[dispDates.length-1];
-    document.getElementById('confirmed-meta').textContent =
+    document.getElementById(metaId).textContent =
       `表示期間: ${s.y}/${String(s.m).padStart(2,'0')}/${String(s.d).padStart(2,'0')} 〜 ${e.y}/${String(e.m).padStart(2,'0')}/${String(e.d).padStart(2,'0')}`;
   }
 
-  document.getElementById('confirmed-body').innerHTML =
+  document.getElementById(bodyId).innerHTML =
     `<div class="table-scroll"><table class="cs-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
 }
 
@@ -741,19 +742,26 @@ async function loadAdminConfirmedShift() {
     const metaData = await sheetsGet('メタ!A1:B5');
     const metaRows = metaData.values || [];
     const published        = metaRows[0] && String(metaRows[0][1]) === '1';
+    const publishedAt      = metaRows[1] && metaRows[1][1] || '';
     const publishedPeriods = metaRows[4] && String(metaRows[4][1]) || '';
 
-    const publishedDates = new Set();
-    if (published && publishedPeriods) {
-      publishedPeriods.split(',').forEach(p => {
-        const [s, e] = p.trim().split('/');
-        if (!s || !e) return;
-        const end = new Date(e);
-        for (let dt = new Date(s); dt <= end; dt.setDate(dt.getDate()+1)) {
-          publishedDates.add(dt.toISOString().slice(0,10));
-        }
-      });
+    if (!published || !publishedPeriods) {
+      document.getElementById('admin-confirmed-body').innerHTML =
+        '<div class="unpublished-msg"><p>確定シフトはまだ公開されていません</p><small>The final shift has not been published yet.</small></div>';
+      return;
     }
+
+    const publishedDates = new Set();
+    publishedPeriods.split(',').forEach(p => {
+      const [s, e] = p.trim().split('/');
+      if (!s || !e) return;
+      const end = new Date(e);
+      for (let dt = new Date(s); dt <= end; dt.setDate(dt.getDate()+1)) {
+        publishedDates.add(dt.toISOString().slice(0,10));
+      }
+    });
+
+    document.getElementById('admin-confirmed-meta').textContent = '公開日時: ' + publishedAt;
 
     const today = new Date();
     const dispDates = getConfirmedDisplayDates(today);
@@ -764,54 +772,12 @@ async function loadAdminConfirmedShift() {
       return;
     }
     const totalRows = await getConfirmedRows(header, dispDates);
-    renderAdminConfirmedTable(header, totalRows, dispDates, publishedDates);
+    renderConfirmedTable(header, totalRows, dispDates, publishedDates, 'admin-confirmed-body', 'admin-confirmed-meta');
   } catch(e) {
     console.error(e);
     document.getElementById('admin-confirmed-body').innerHTML = '<div class="loading-msg">読み込みに失敗しました</div>';
   }
 }
-
-function renderAdminConfirmedTable(header, rowsMap, dispDates, publishedDates) {
-  let thead = '<tr><th class="th-date">日付</th><th class="th-biko">備考</th>';
-  appNames.forEach(n => { thead += `<th>${n}</th>`; });
-  thead += '</tr>';
-
-  const bikoIdx = header.indexOf('備考');
-
-  let tbody = '';
-  dispDates.forEach(({ y, m, d, dow, sat, sun, key }) => {
-    const trClass = sat ? 'sat' : sun ? 'sun' : '';
-    const rowData = rowsMap[key];
-    const biko = (bikoIdx >= 0 && rowData && rowData.startRow && rowData.startRow[bikoIdx])
-      ? String(rowData.startRow[bikoIdx]) : '';
-    const dateKey = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isPublished = publishedDates.has(dateKey);
-
-    let row = `<tr class="${trClass}"><td class="td-date">${m}/${d}(${dow})</td><td class="td-biko">${biko}</td>`;
-    appNames.forEach(name => {
-      const colIdx = header.indexOf(name);
-      if (colIdx < 0) { row += '<td class="no-val">—</td>'; return; }
-      const sv = rowData && rowData.startRow && rowData.startRow[colIdx];
-      const ev = rowData && rowData.endRow   && rowData.endRow[colIdx];
-      if (sv && ev && sv !== '' && ev !== '') {
-        const cls = isPublished ? 'has-val' : 'no-val';
-        row += `<td class="${cls}">${valToTime(parseFloat(sv))}<br>${valToTime(parseFloat(ev))}</td>`;
-      } else {
-        row += '<td class="no-val">—</td>';
-      }
-    });
-    row += '</tr>';
-    tbody += row;
-  });
-
-  if (dispDates.length > 0) {
-    const s = dispDates[0], e = dispDates[dispDates.length-1];
-    document.getElementById('admin-confirmed-meta').textContent =
-      `表示期間: ${s.y}/${String(s.m).padStart(2,'0')}/${String(s.d).padStart(2,'0')} 〜 ${e.y}/${String(e.m).padStart(2,'0')}/${String(e.d).padStart(2,'0')}`;
-  }
-
-  document.getElementById('admin-confirmed-body').innerHTML =
-    `<div class="table-scroll"><table class="cs-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
 }
 
 async function loadAdminMeta() {
