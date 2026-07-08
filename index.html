@@ -659,26 +659,30 @@ async function doSubmit() {
   await gasCall('data=' + encodeURIComponent(JSON.stringify(payload)));
 
   btn.textContent = '確認中...';
-  await new Promise(r => setTimeout(r, 3000));
 
-  try {
-    const latest = await readHopeShifts();
-    const latestUser = (latest[currentUser] && latest[currentUser].shifts) || {};
-    let matched = true;
-    hopeDates.forEach(({ key }) => {
-      const sent = payload.shifts[key] || { s: null, e: null };
-      const got  = latestUser[key]     || { s: null, e: null };
-      if (sent.s !== got.s || sent.e !== got.e) matched = false;
-    });
-    if (matched) {
-      btn.disabled = false; btn.textContent = '提出済み ✓'; btn.style.background = '#34c759';
-    } else {
-      btn.disabled = false; btn.textContent = '提出 / Submit'; btn.style.background = '';
-      showToast('エラー。再度「提出」を押してください');
+  let matched = false;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    await new Promise(r => setTimeout(r, 3000));
+    try {
+      const latest = await readHopeShifts();
+      const latestUser = (latest[currentUser] && latest[currentUser].shifts) || {};
+      matched = true;
+      hopeDates.forEach(({ key }) => {
+        const sent = payload.shifts[key] || { s: null, e: null };
+        const got  = latestUser[key]     || { s: null, e: null };
+        if (sent.s !== got.s || sent.e !== got.e) matched = false;
+      });
+      if (matched) break;
+    } catch(e) {
+      // 次のリトライへ
     }
-  } catch(e) {
+  }
+
+  if (matched) {
+    btn.disabled = false; btn.textContent = '提出済み ✓'; btn.style.background = '#34c759';
+  } else {
     btn.disabled = false; btn.textContent = '提出 / Submit'; btn.style.background = '';
-    showToast('確認できませんでした。再度「提出」を押してください');
+    showToast('エラー。再度「提出」を押してください');
   }
 }
 
