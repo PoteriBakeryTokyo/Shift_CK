@@ -479,7 +479,7 @@ function getConfirmedDisplayDates(today) {
 }
 
 async function getConfirmedRows(header, dispDates) {
-  const data = await sheetsGet('確定シフト!A1:Z500');
+  const data = await sheetsGet('確定シフト!A1:Z1000');
   const rows = data.values || [];
   const result = {};
   let lastKey = null;
@@ -612,7 +612,7 @@ async function readHopeShifts() {
   // ヘッダー・全データ・コメント行を取得
   const [headerData, allData] = await Promise.all([
     sheetsGet('希望シフト!A1:Z1'),
-    sheetsGet('希望シフト!A1:Z500')
+    sheetsGet('希望シフト!A1:Z1000')
   ]);
   const header  = (headerData.values && headerData.values[0]) || [];
   const allRows = (allData.values)   || [];
