@@ -332,13 +332,12 @@ async function gasGet(params) {
 
 // ===== LOGIN =====
 async function loadUsers() {
-  appNames = ['高城','大辺','石橋','清水','松井','大貫','山邉','Sneha','平井','清末','正田','トゥオン','高見','雨宮'];
-  buildNameSelect(appNames);
   try {
     const data = await sheetsGet('ユーザ!A2:A30');
     const names = (data.values||[]).map(r=>String(r[0]).trim()).filter(n=>n&&n!=='管理者');
-    if (names.length>0) { appNames = names; buildNameSelect(appNames); }
+    if (names.length>0) { appNames = names; }
   } catch(e) { console.warn('ユーザ取得失敗:', e); }
+  buildNameSelect(appNames);
 }
 
 function buildNameSelect(names) {
